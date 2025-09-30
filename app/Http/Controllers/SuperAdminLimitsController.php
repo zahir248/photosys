@@ -62,7 +62,20 @@ class SuperAdminLimitsController extends Controller
         ]);
 
         $limits = $user->getLimits();
-        $limits->update($request->all());
+        
+        // Handle boolean fields properly - unchecked checkboxes don't send values
+        $updateData = [
+            'max_photos' => $request->max_photos,
+            'max_storage_mb' => $request->max_storage_mb,
+            'max_albums' => $request->max_albums,
+            'max_organizations' => $request->max_organizations,
+            'unlimited_photos' => $request->boolean('unlimited_photos'),
+            'unlimited_storage' => $request->boolean('unlimited_storage'),
+            'unlimited_albums' => $request->boolean('unlimited_albums'),
+            'unlimited_organizations' => $request->boolean('unlimited_organizations'),
+        ];
+        
+        $limits->update($updateData);
 
         return redirect()->route('superadmin.limits.show', $user)
                         ->with('success', 'User limits updated successfully.');
@@ -126,18 +139,8 @@ class SuperAdminLimitsController extends Controller
      */
     private function getTotalStorageUsed(): float
     {
-        $totalSize = 0;
-        $users = User::with('photos')->get();
-        
-        foreach ($users as $user) {
-            foreach ($user->photos as $photo) {
-                $filePath = storage_path('app/public/' . $photo->filename);
-                if (file_exists($filePath)) {
-                    $totalSize += filesize($filePath);
-                }
-            }
-        }
-        
+        // Use the size_bytes field from the database for consistency
+        $totalSize = \App\Models\Photo::whereNull('organization_id')->sum('size_bytes');
         return round($totalSize / (1024 * 1024), 2);
     }
 

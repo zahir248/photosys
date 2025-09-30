@@ -163,33 +163,37 @@ class PhotoController extends Controller
                     }
                     
                     // Check photo count limit (considering all files being uploaded)
-                    $currentPhotos = $orgLimits->current_photos;
-                    if (($currentPhotos + $fileCount) > $orgLimits->max_photos) {
-                        $maxPhotos = $orgLimits->max_photos;
-                        $message = "Organization photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} photos. Trying to upload {$fileCount} more photos. Contact an administrator to increase the limit.";
-                        
-                        if ($request->ajax() || $request->wantsJson()) {
-                            return response()->json([
-                                'success' => false,
-                                'message' => $message
-                            ], 403);
+                    if (!$orgLimits->unlimited_photos) {
+                        $currentPhotos = $orgLimits->current_photos;
+                        if (($currentPhotos + $fileCount) > $orgLimits->max_photos) {
+                            $maxPhotos = $orgLimits->max_photos;
+                            $message = "Organization photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} photos. Trying to upload {$fileCount} more photos. Contact an administrator to increase the limit.";
+                            
+                            if ($request->ajax() || $request->wantsJson()) {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => $message
+                                ], 403);
+                            }
+                            return back()->withErrors(['photos' => $message]);
                         }
-                        return back()->withErrors(['photos' => $message]);
                     }
                     
                     // Check storage limit (considering total size of all files)
-                    if (($orgLimits->current_storage_mb + $totalFileSizeMb) > $orgLimits->max_storage_mb) {
+                    if (!$orgLimits->unlimited_storage) {
                         $currentStorage = $orgLimits->current_storage_mb;
-                        $maxStorage = $orgLimits->max_storage_mb;
-                        $message = "Organization storage limit would be exceeded! Current: {$currentStorage}MB/{$maxStorage}MB. Total upload size: {$totalFileSizeMb}MB. Contact an administrator to increase the limit.";
-                        
-                        if ($request->ajax() || $request->wantsJson()) {
-                            return response()->json([
-                                'success' => false,
-                                'message' => $message
-                            ], 403);
+                        if (($currentStorage + $totalFileSizeMb) > $orgLimits->max_storage_mb) {
+                            $maxStorage = $orgLimits->max_storage_mb;
+                            $message = "Organization storage limit would be exceeded! Current: {$currentStorage}MB/{$maxStorage}MB. Total upload size: {$totalFileSizeMb}MB. Contact an administrator to increase the limit.";
+                            
+                            if ($request->ajax() || $request->wantsJson()) {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => $message
+                                ], 403);
+                            }
+                            return back()->withErrors(['photos' => $message]);
                         }
-                        return back()->withErrors(['photos' => $message]);
                     }
                 }
 

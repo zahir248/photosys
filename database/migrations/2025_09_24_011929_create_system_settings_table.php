@@ -50,6 +50,35 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            // Organization limits settings
+            [
+                'key' => 'default_org_max_photos',
+                'value' => '10000',
+                'description' => 'Default maximum photos per organization',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'default_org_max_storage_mb',
+                'value' => '10240',
+                'description' => 'Default maximum storage in MB per organization',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'default_org_max_albums',
+                'value' => '500',
+                'description' => 'Default maximum albums per organization',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'default_org_max_members',
+                'value' => '100',
+                'description' => 'Default maximum members per organization',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
