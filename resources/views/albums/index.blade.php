@@ -498,11 +498,17 @@ body.modal-open {
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                        <h6 class="card-title mb-3">
-                            Your Usage Status
-                        </h6>
-                    <div class="row">
+                <div class="card-header bg-light border-0 py-3">
+                    <h6 class="card-title mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold">Your Usage Status</span>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#usageStatusCollapse" aria-expanded="false" aria-controls="usageStatusCollapse">
+                            <i class="bi bi-chevron-right" id="usageStatusIcon"></i>
+                        </button>
+                    </h6>
+                </div>
+                <div class="collapse" id="usageStatusCollapse">
+                    <div class="card-body">
+                        <div class="row">
                         <!-- Albums Usage -->
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
@@ -588,6 +594,7 @@ body.modal-open {
                                     @endif
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -1074,6 +1081,22 @@ function closeCreateAlbumModal() {
 function initializeApp() {
     const sortFilter = document.getElementById('sortFilter');
     const albumCards = document.querySelectorAll('.album-card');
+    
+    // Initialize collapsible usage status
+    const usageStatusCollapse = document.getElementById('usageStatusCollapse');
+    const usageStatusIcon = document.getElementById('usageStatusIcon');
+    
+    if (usageStatusCollapse && usageStatusIcon) {
+        usageStatusCollapse.addEventListener('show.bs.collapse', function () {
+            usageStatusIcon.classList.remove('bi-chevron-right');
+            usageStatusIcon.classList.add('bi-chevron-down');
+        });
+        
+        usageStatusCollapse.addEventListener('hide.bs.collapse', function () {
+            usageStatusIcon.classList.remove('bi-chevron-down');
+            usageStatusIcon.classList.add('bi-chevron-right');
+        });
+    }
 
     function filterAlbums() {
         // Check if required elements exist

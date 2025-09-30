@@ -1193,12 +1193,16 @@ body.modal-open {
                 <div class="mt-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-light border-0 py-3">
-                            <h6 class="card-title mb-0 d-flex align-items-center">
+                            <h6 class="card-title mb-0 d-flex align-items-center justify-content-between">
                                 <span class="fw-semibold">Resource Usage</span>
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#resourceUsageCollapse" aria-expanded="false" aria-controls="resourceUsageCollapse">
+                                    <i class="bi bi-chevron-right" id="resourceUsageIcon"></i>
+                                </button>
                             </h6>
                         </div>
-                        <div class="card-body py-4">
-                            <div class="row g-4">
+                        <div class="collapse" id="resourceUsageCollapse">
+                            <div class="card-body py-4">
+                                <div class="row g-4">
                                 <!-- Photos Usage -->
                                 <div class="col-lg-3 col-md-6">
                                     <div class="resource-usage-item h-100">
@@ -1314,6 +1318,7 @@ body.modal-open {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -1667,6 +1672,22 @@ function showToast(message, type = 'success') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize collapsible resource usage
+    const resourceUsageCollapse = document.getElementById('resourceUsageCollapse');
+    const resourceUsageIcon = document.getElementById('resourceUsageIcon');
+    
+    if (resourceUsageCollapse && resourceUsageIcon) {
+        resourceUsageCollapse.addEventListener('show.bs.collapse', function () {
+            resourceUsageIcon.classList.remove('bi-chevron-right');
+            resourceUsageIcon.classList.add('bi-chevron-down');
+        });
+        
+        resourceUsageCollapse.addEventListener('hide.bs.collapse', function () {
+            resourceUsageIcon.classList.remove('bi-chevron-down');
+            resourceUsageIcon.classList.add('bi-chevron-right');
+        });
+    }
+    
     // Albums filtering and sorting
     const albumSortFilter = document.getElementById('albumSortFilter');
     const albumCards = document.querySelectorAll('.album-card');
