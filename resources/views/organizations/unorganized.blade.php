@@ -5,10 +5,57 @@
     ['url' => route('dashboard'), 'label' => 'Dashboard'],
     ['url' => route('organizations.index'), 'label' => 'Organizations'],
     ['url' => route('organizations.show', $organization->name), 'label' => $organization->name],
-    ['label' => 'Unorganized Photos']
+    ['label' => 'Unorganized Media']
 ]" />
 
 <style>
+/* Media Preview Styles */
+.media-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.media-preview.audio-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview.file-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.media-preview .file-extension {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #495057;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.media-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-preview audio {
+    width: 100%;
+    max-width: 200px;
+}
+
 /* Grid View Styles */
 .photos-grid {
     display: grid;
@@ -554,15 +601,15 @@
     z-index: 1050 !important;
 }
 
-#editPhotoModal {
+#editMediaModal {
     z-index: 1055 !important;
 }
 
-#editPhotoModal .modal-dialog {
+#editMediaModal .modal-dialog {
     z-index: 1056 !important;
 }
 
-#editPhotoModal .modal-content {
+#editMediaModal .modal-content {
     z-index: 1057 !important;
 }
 
@@ -714,8 +761,8 @@
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
          <div>
-             <h1 class="h3 mb-1">Unorganized Photos</h1>
-             <p class="text-muted mb-0">Photos that haven't been added to any album</p>
+             <h1 class="h3 mb-1">Unorganized Media</h1>
+             <p class="text-muted mb-0">Media that hasn't been added to any album</p>
          </div>
     </div>
 
@@ -765,7 +812,27 @@
                     </div>
                     
                     <div class="photo-thumbnail">
-                        <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                        @if($photo->media_type === 'image')
+                            <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                        @elseif($photo->media_type === 'video')
+                            <video class="media-preview" controls>
+                                <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        @elseif($photo->media_type === 'audio')
+                            <div class="media-preview audio-preview">
+                                <i class="bi {{ $photo->icon }}"></i>
+                                <audio controls>
+                                    <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                            </div>
+                        @else
+                            <div class="media-preview file-preview">
+                                <i class="bi {{ $photo->icon }}"></i>
+                                <span class="file-extension">{{ strtoupper($photo->file_extension) }}</span>
+                            </div>
+                        @endif
                         <div class="photo-thumbnail-actions">
                             <a href="{{ $photo->url }}" target="_blank" class="btn btn-light btn-sm">
                                 <i class="bi bi-eye"></i>
@@ -775,7 +842,7 @@
                                     <i class="bi bi-gear"></i>
                                 </button>
                             @else
-                                <button class="btn btn-secondary btn-sm" disabled title="You can only edit photos you uploaded">
+                                <button class="btn btn-secondary btn-sm" disabled title="You can only edit media you uploaded">
                                     <i class="bi bi-gear"></i>
                                 </button>
                             @endif
@@ -811,11 +878,11 @@
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 @if($photo->isAccessibleBy(Auth::user()))
-                                    <button class="btn btn-outline-primary btn-sm btn-manage" title="Manage Photo" onclick="openEditModal('{{ $photo->filename }}')">
+                                    <button class="btn btn-outline-primary btn-sm btn-manage" title="Manage Media" onclick="openEditModal('{{ $photo->filename }}')">
                                         <i class="bi bi-gear"></i>
                                     </button>
                                 @else
-                                    <button class="btn btn-outline-secondary btn-sm btn-manage" disabled title="You can only edit photos you uploaded">
+                                    <button class="btn btn-outline-secondary btn-sm btn-manage" disabled title="You can only edit media you uploaded">
                                         <i class="bi bi-gear"></i>
                                     </button>
                                 @endif
@@ -824,7 +891,7 @@
                                         <i class="bi bi-share"></i>
                                     </button>
                                 @endif
-                                <a href="{{ route('photos.download', $photo->filename) }}" class="btn btn-outline-success btn-sm" title="Download">
+                                <a href="{{ route('media.download', $photo->filename) }}" class="btn btn-outline-success btn-sm" title="Download">
                                     <i class="bi bi-download"></i>
                                 </a>
                             </div>
@@ -843,18 +910,18 @@
             <div class="empty-state-icon">
                 <i class="bi bi-image"></i>
             </div>
-            <h4>No Unorganized Photos</h4>
-            <p>All photos in this organization have been organized into albums</p>
+            <h4>No Unorganized Media</h4>
+            <p>All media in this organization have been organized into albums</p>
         </div>
     @endif
 </div>
 <!-- Edit Photo Modal -->
-<div class="modal fade" id="editPhotoModal" tabindex="-1" aria-labelledby="editPhotoModalLabel" aria-hidden="true">
+<div class="modal fade" id="editMediaModal" tabindex="-1" aria-labelledby="editMediaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
              <div class="modal-header border-0 pb-0">
-                 <h6 class="modal-title" id="editPhotoModalLabel">
-                     <i class="bi bi-gear me-2"></i>Manage Photo
+                 <h6 class="modal-title" id="editMediaModalLabel">
+                     <i class="bi bi-gear me-2"></i>Manage Media
                  </h6>
                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
              </div>
@@ -877,9 +944,11 @@
                 <div class="tab-content" id="photoTabContent">
                     <!-- Edit Tab -->
                     <div class="tab-pane fade show active" id="edit-pane" role="tabpanel">
-                        <form id="editPhotoForm" method="POST">
+                        <form id="editMediaForm" method="POST">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="organization_id" value="{{ $organization->id }}">
+                            <input type="hidden" name="visibility" value="org">
 
                             <div class="row">
                                 <!-- Left Column: Photo Preview -->
@@ -981,12 +1050,12 @@
                 <div class="alert alert-warning d-flex align-items-center mb-3">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <div>
-                        <strong>Warning:</strong> This action cannot be undone. Selected photos will be permanently deleted.
+                        <strong>Warning:</strong> This action cannot be undone. Selected media will be permanently deleted.
                     </div>
                 </div>
                 
                 <div class="mb-3">
-                    <p class="mb-2">You are about to delete <strong id="bulkDeleteCount">0</strong> photo<span id="bulkDeletePlural">s</span>:</p>
+                    <p class="mb-2">You are about to delete <strong id="bulkDeleteCount">0</strong> media item<span id="bulkDeletePlural">s</span>:</p>
                     <div class="selected-photos-list" id="selectedPhotosList" style="max-height: 200px; overflow-y: auto;">
                         <!-- Selected photos will be listed here -->
                     </div>
@@ -995,13 +1064,13 @@
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="confirmBulkDelete">
                     <label class="form-check-label" for="confirmBulkDelete">
-                        I understand that this action cannot be undone and I want to permanently delete these photos.
+                        I understand that this action cannot be undone and I want to permanently delete these media.
                     </label>
                 </div>
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-danger" id="confirmBulkDeleteBtn" disabled>
-                    <i class="bi bi-trash me-1"></i>Delete Photos
+                    <i class="bi bi-trash me-1"></i>Delete Media
                 </button>
             </div>
         </div>
@@ -1016,7 +1085,7 @@ function openEditModal(filename) {
     currentPhotoFilename = filename;
     
     // Show loading state
-    const modalElement = document.getElementById('editPhotoModal');
+    const modalElement = document.getElementById('editMediaModal');
     console.log('Modal element:', modalElement);
     
     if (!modalElement) {
@@ -1076,7 +1145,7 @@ function openEditModal(filename) {
     const from = 'organization';
     const org = '{{ $organization->name }}';
     
-    let fetchUrl = `/photos/${filename}/edit-data?from=${from}&org=${encodeURIComponent(org)}`;
+    let fetchUrl = `/media/${filename}/edit-data?from=${from}&org=${encodeURIComponent(org)}`;
     
     fetch(fetchUrl)
         .then(response => {
@@ -1122,12 +1191,12 @@ function openEditModal(filename) {
             selectModalVisibility(data.photo.visibility);
             
             // Set form action
-            document.getElementById('editPhotoForm').action = `/photos/${filename}`;
+            document.getElementById('editMediaForm').action = `/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
             if (error.message.includes('403')) {
-                alert('You can only edit photos that you uploaded. This photo was uploaded by another user.');
+                alert('You can only edit media that you uploaded. This media was uploaded by another user.');
             } else {
                 alert(`Error loading photo data: ${error.message}. Please try again.`);
             }
@@ -1182,7 +1251,7 @@ function deletePhoto() {
         const from = 'organization';
         const org = '{{ $organization->name }}';
         
-        let url = `/photos/${currentPhotoFilename}?from=${from}&org=${encodeURIComponent(org)}`;
+        let url = `/media/${currentPhotoFilename}?from=${from}&org=${encodeURIComponent(org)}`;
         
         fetch(url, {
             method: 'DELETE',
@@ -1208,21 +1277,21 @@ function deletePhoto() {
         .then(data => {
             if (data.success) {
                 // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editPhotoModal'));
-                modal.hide();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editMediaModal'));
+                if (modal) modal.hide();
                 
                 // Show success message and reload page
-                showToast('Photo deleted successfully!', 'success');
+                showToast('Media deleted successfully!', 'success');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
-                throw new Error(data.message || 'Failed to delete photo');
+                throw new Error(data.message || 'Failed to delete media');
             }
         })
         .catch(error => {
-            console.error('Error deleting photo:', error);
-            let errorMessage = 'Error deleting photo. Please try again.';
+            console.error('Error deleting media:', error);
+            let errorMessage = 'Error deleting media. Please try again.';
             if (error.message.includes('405')) {
                 errorMessage = 'Server error: Method not allowed. Please refresh the page and try again.';
             } else if (error.message.includes('Invalid response')) {
@@ -1234,8 +1303,26 @@ function deletePhoto() {
 }
 
 function submitEditForm() {
-    const form = document.getElementById('editPhotoForm');
+    const form = document.getElementById('editMediaForm');
     const formData = new FormData(form);
+    
+    // Debug: Log form data to console
+    console.log('Form action:', form.action);
+    console.log('Form data entries:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, ':', value);
+    }
+
+    // Check if organization_id is in the form data
+    const organizationIdValue = formData.get('organization_id');
+    console.log('Organization ID in form data:', organizationIdValue);
+
+    // Also check if the field exists in the form
+    const orgIdField = form.querySelector('input[name="organization_id"]');
+    console.log('Organization ID field in form:', orgIdField);
+    if (orgIdField) {
+        console.log('Organization ID field value:', orgIdField.value);
+    }
     
     // Get CSRF token from meta tag
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -1264,21 +1351,21 @@ function submitEditForm() {
     .then(data => {
         if (data.success) {
             // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editPhotoModal'));
-            modal.hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editMediaModal'));
+            if (modal) modal.hide();
 
             // Show success message and reload page
-            showToast('Photo updated successfully!', 'success');
+            showToast('Media updated successfully!', 'success');
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
         } else {
-            throw new Error(data.message || 'Failed to update photo');
+            throw new Error(data.message || 'Failed to update media');
         }
     })
     .catch(error => {
-        console.error('Error updating photo:', error);
-        let errorMessage = 'Error updating photo. Please try again.';
+        console.error('Error updating media:', error);
+        let errorMessage = 'Error updating media. Please try again.';
         if (error.message.includes('405')) {
             errorMessage = 'Server error: Method not allowed. Please refresh the page and try again.';
         } else if (error.message.includes('Invalid response')) {
@@ -1288,9 +1375,20 @@ function submitEditForm() {
     });
 }
 
+// Add form submit event listener to handle Enter key presses
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.getElementById('editMediaForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            submitEditForm(); // Call the same function as the Save button
+        });
+    }
+});
+
 // Add modal event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('editPhotoModal');
+    const editModal = document.getElementById('editMediaModal');
     console.log('Edit modal element on load:', editModal);
     if (editModal) {
         console.log('Modal classes:', editModal.className);
@@ -1404,7 +1502,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const filenames = Array.from(checkedBoxes).map(cb => cb.value);
         
         if (filenames.length === 0) {
-            showToast('No photos selected for deletion.', 'warning');
+            showToast('No media selected for deletion.', 'warning');
             return;
         }
         
@@ -1543,7 +1641,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let errorCount = 0;
         
         const deletePromises = filenames.map(filename => {
-            return fetch(`/photos/${filename}`, {
+            return fetch(`/media/${filename}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1591,23 +1689,23 @@ document.addEventListener('DOMContentLoaded', function() {
             bulkDeleteBtn.disabled = false;
             bulkDeleteBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete Selected';
             confirmBtn.disabled = false;
-            confirmBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete Photos';
+            confirmBtn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete Media';
             
             // Clear selection
             clearSelection();
             
             if (errorCount === 0) {
-                showToast(`Successfully deleted ${deletedCount} photo${deletedCount > 1 ? 's' : ''}!`, 'success');
+                showToast(`Successfully deleted ${deletedCount} media!`, 'success');
                 setTimeout(() => {
                     location.reload();
                 }, 1000);
             } else if (deletedCount > 0) {
-                showToast(`Deleted ${deletedCount} photo${deletedCount > 1 ? 's' : ''}, but ${errorCount} failed. Please refresh the page.`, 'warning');
+                showToast(`Deleted ${deletedCount} media, but ${errorCount} failed. Please refresh the page.`, 'warning');
                 setTimeout(() => {
                     location.reload();
                 }, 2000);
             } else {
-                showToast('Failed to delete photos. Please try again.', 'error');
+                showToast('Failed to delete media. Please try again.', 'error');
             }
         });
     }

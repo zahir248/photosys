@@ -35,9 +35,10 @@ class Album extends Model
      */
     public function photos()
     {
-        return $this->belongsToMany(Photo::class)
+        return $this->belongsToMany(Photo::class, 'album_media', 'album_id', 'media_id')
+                    ->withPivot('created_at', 'updated_at')
                     ->withTimestamps()
-                    ->orderBy('album_photo.created_at', 'desc');
+                    ->orderBy('album_media.created_at', 'desc');
     }
 
     /**
@@ -58,9 +59,9 @@ class Album extends Model
     public function setFirstPhotoAsCover()
     {
         if (!$this->cover_image) {
-            $firstPhoto = $this->photos()->first();
+            $firstPhoto = $this->photos()->where('media_type', 'image')->first();
             if ($firstPhoto) {
-                // Copy the first photo to be the cover image
+                // Copy the first image photo to be the cover image
                 $coverPath = 'album-covers/' . uniqid() . '_' . $firstPhoto->filename;
                 $sourcePath = storage_path('app/public/' . $firstPhoto->storage_path);
                 $destinationPath = storage_path('app/public/' . $coverPath);

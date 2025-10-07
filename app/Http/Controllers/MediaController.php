@@ -10,34 +10,80 @@ use App\Models\Photo;
 use App\Models\Album;
 use App\Models\Organization;
 
-class PhotoController extends Controller
+class MediaController extends Controller
 {
     /**
-     * Display a listing of all photos accessible to the authenticated user.
+     * Detect media type based on MIME type and file extension.
+     */
+    private function detectMediaType($mimeType, $extension)
+    {
+        $imageMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/svg+xml', 'image/tiff'];
+        $videoMimes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm', 'video/mkv', 'video/quicktime'];
+        $audioMimes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/flac', 'audio/m4a', 'audio/wma'];
+        $documentMimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        $archiveMimes = ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed', 'application/gzip', 'application/x-tar'];
+        
+        if (in_array($mimeType, $imageMimes)) {
+            return 'image';
+        } elseif (in_array($mimeType, $videoMimes)) {
+            return 'video';
+        } elseif (in_array($mimeType, $audioMimes)) {
+            return 'audio';
+        } elseif (in_array($mimeType, $documentMimes)) {
+            return 'document';
+        } elseif (in_array($mimeType, $archiveMimes)) {
+            return 'archive';
+        }
+        
+        // Fallback based on file extension
+        $imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'tiff'];
+        $videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'qt'];
+        $audioExts = ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a', 'wma'];
+        $documentExts = ['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'ppt', 'pptx'];
+        $archiveExts = ['zip', 'rar', '7z', 'gz', 'tar'];
+        
+        $ext = strtolower($extension);
+        
+        if (in_array($ext, $imageExts)) {
+            return 'image';
+        } elseif (in_array($ext, $videoExts)) {
+            return 'video';
+        } elseif (in_array($ext, $audioExts)) {
+            return 'audio';
+        } elseif (in_array($ext, $documentExts)) {
+            return 'document';
+        } elseif (in_array($ext, $archiveExts)) {
+            return 'archive';
+        }
+        
+        return 'other';
+    }
+    /**
+     * Display a listing of all media accessible to the authenticated user.
      */
     public function index(Request $request)
     {
         $user = Auth::user();
         $organizationId = $request->get('organization_id');
         
-        // Get only the user's own personal photos (private and public, no organization photos)
+        // Get only the user's own personal media (private and public, no organization media)
         $query = Photo::where('user_id', $user->id) // Only user's own photos
-                     ->whereNull('organization_id') // Exclude organization photos
+                     ->whereNull('organization_id') // Exclude organization media
                      ->whereIn('visibility', ['private', 'public']); // Only private and public visibility
 
         if ($organizationId) {
             $query->where('organization_id', $organizationId);
         }
 
-        $photos = $query->with(['albums', 'organization', 'user'])->latest()->paginate(12);
+        $media = $query->with(['albums', 'organization', 'user'])->latest()->paginate(12);
         $organizations = $user->organizations;
 
-        return view('photos.index', compact('photos', 'organizations', 'organizationId'));
+        return view('media.index', compact('media', 'organizations', 'organizationId'));
     }
 
 
     /**
-     * Show the form for uploading a new photo.
+     * Show the form for uploading new media.
      */
     public function create()
     {
@@ -45,7 +91,7 @@ class PhotoController extends Controller
         $organizations = $user->organizations;
         $albums = $user->albums()->with('organization')->get();
 
-        return view('photos.create', compact('organizations', 'albums'));
+        return view('media.create', compact('organizations', 'albums'));
     }
 
     /**
@@ -60,18 +106,18 @@ class PhotoController extends Controller
         // Find the specific album
         $selectedAlbum = $user->albums()->where('name', $albumName)->firstOrFail();
 
-        return view('photos.create', compact('organizations', 'albums', 'selectedAlbum'));
+        return view('media.create', compact('organizations', 'albums', 'selectedAlbum'));
     }
 
     /**
-     * Store a newly uploaded photo.
+     * Store newly uploaded media files.
      */
     public function store(Request $request)
     {
         try {
             $request->validate([
                 'photos' => 'required|array|min:1',
-                'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max per file, specific image types
+                'photos.*' => 'required|file|max:102400', // 100MB max per file, all file types
                 'title' => 'nullable|string|max:255',
                 'description' => 'nullable|string|max:1000',
                 'organization_id' => 'nullable|exists:organizations,id',
@@ -79,12 +125,11 @@ class PhotoController extends Controller
                 'album_ids.*' => 'exists:albums,id',
                 'visibility' => 'required|in:private,public,org',
             ], [
-                'photos.required' => 'Please select at least one photo to upload.',
-                'photos.array' => 'Photos must be uploaded as files.',
-                'photos.*.required' => 'Each photo file is required.',
-                'photos.*.image' => 'Each file must be a valid image (JPEG, PNG, JPG, GIF, or WebP).',
-                'photos.*.mimes' => 'Each file must be one of the following image types: JPEG, PNG, JPG, GIF, or WebP.',
-                'photos.*.max' => 'Each photo file must not exceed 10MB.',
+                'photos.required' => 'Please select at least one media file to upload.',
+                'photos.array' => 'Media must be uploaded as files.',
+                'photos.*.required' => 'Each media file is required.',
+                'photos.*.file' => 'Each file must be a valid file.',
+                'photos.*.max' => 'Each media file must not exceed 100MB.',
             ]);
 
             $user = Auth::user()->load('limits');
@@ -107,7 +152,7 @@ class PhotoController extends Controller
                     $currentPhotos = $userLimits->current_photos;
                     if (($currentPhotos + $fileCount) > $userLimits->max_photos) {
                         $maxPhotos = $userLimits->max_photos;
-                        $message = "Personal photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} photos. Trying to upload {$fileCount} more photos. Contact an administrator to increase your limit.";
+                        $message = "Personal photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} media. Trying to upload {$fileCount} more media. Contact an administrator to increase your limit.";
                         
                         if ($request->ajax() || $request->wantsJson()) {
                             return response()->json([
@@ -167,7 +212,7 @@ class PhotoController extends Controller
                         $currentPhotos = $orgLimits->current_photos;
                         if (($currentPhotos + $fileCount) > $orgLimits->max_photos) {
                             $maxPhotos = $orgLimits->max_photos;
-                            $message = "Organization photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} photos. Trying to upload {$fileCount} more photos. Contact an administrator to increase the limit.";
+                            $message = "Organization photo limit would be exceeded! Current: {$currentPhotos}/{$maxPhotos} media. Trying to upload {$fileCount} more media. Contact an administrator to increase the limit.";
                             
                             if ($request->ajax() || $request->wantsJson()) {
                                 return response()->json([
@@ -215,7 +260,7 @@ class PhotoController extends Controller
             }
 
             $files = $request->file('photos');
-            $uploadedPhotos = [];
+            $uploadedMedia = [];
             
             // Additional validation for each file
             foreach ($files as $index => $file) {
@@ -232,31 +277,24 @@ class PhotoController extends Controller
                         ['photos.' . $index => ['The file at position ' . ($index + 1) . ' is empty.']]
                     );
                 }
-                
-                // Check if file is actually an image by checking MIME type
-                $mimeType = $file->getMimeType();
-                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                if (!in_array($mimeType, $allowedMimes)) {
-                    throw new \Illuminate\Validation\ValidationException(
-                        validator([], []),
-                        ['photos.' . $index => ['The file at position ' . ($index + 1) . ' is not a valid image. Detected type: ' . $mimeType]]
-                    );
-                }
             }
             
             foreach ($files as $file) {
                 $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $mimeType = $file->getMimeType();
+                $extension = $file->getClientOriginalExtension();
+                $photoType = $this->detectMediaType($mimeType, $extension);
                 
                 // Determine storage path based on organization
                 if ($organization) {
-                    $storagePath = "photos/{$organization->id}/{$filename}";
-                    $file->storeAs("photos/{$organization->id}", $filename, 'public');
+                    $storagePath = "media/{$organization->id}/{$filename}";
+                    $file->storeAs("media/{$organization->id}", $filename, 'public');
                 } else {
-                    $storagePath = "photos/personal/{$user->id}/{$filename}";
-                    $file->storeAs("photos/personal/{$user->id}", $filename, 'public');
+                    $storagePath = "media/personal/{$user->id}/{$filename}";
+                    $file->storeAs("media/personal/{$user->id}", $filename, 'public');
                 }
 
-                // Create photo record - use filename as title if no title provided or multiple files
+                // Create media record - use filename as title if no title provided or multiple files
                 $photoTitle = $request->title;
                 if (!$photoTitle || count($files) > 1) {
                     $photoTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -269,7 +307,9 @@ class PhotoController extends Controller
                     'title' => $photoTitle,
                     'description' => $request->description,
                     'storage_path' => $storagePath,
-                    'mime' => $file->getMimeType(),
+                    'mime' => $mimeType,
+                    'media_type' => $photoType,
+                    'file_extension' => $extension,
                     'size_bytes' => $file->getSize(),
                     'visibility' => $request->visibility,
                 ]);
@@ -284,19 +324,18 @@ class PhotoController extends Controller
 
             $photoCount = count($uploadedPhotos);
             $message = $photoCount === 1 
-                ? 'Photo uploaded successfully!' 
-                : "{$photoCount} photos uploaded successfully!";
+                ? 'Media uploaded successfully!' 
+                : "{$photoCount} media files uploaded successfully!";
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => $message,
-                    'photos' => $uploadedPhotos,
-                    'photo' => $uploadedPhotos[0] // For backward compatibility
+                    'photos' => $uploadedPhotos
                 ]);
             }
 
-            return redirect()->route('photos.show', $uploadedPhotos[0]->filename)->with('success', $message);
+            return redirect()->route('media.show', $uploadedPhotos[0]->filename)->with('success', $message);
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -332,7 +371,7 @@ class PhotoController extends Controller
 
         $photo->load(['albums', 'organization', 'user']);
 
-        return view('photos.show', compact('photo'));
+        return view('media.show', compact('photo'));
     }
 
     /**
@@ -370,7 +409,7 @@ class PhotoController extends Controller
 
         $photo->load(['albums', 'organization', 'user']);
 
-        return view('photos.share', compact('photo'));
+        return view('media.share', compact('photo'));
     }
 
     /**
@@ -397,11 +436,11 @@ class PhotoController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Photo deleted successfully!'
+                'message' => 'Media deleted successfully!'
             ]);
         }
 
-        return redirect()->route('photos.index')->with('success', 'Photo deleted successfully!');
+        return redirect()->route('media.index')->with('success', 'Media deleted successfully!');
     }
 
     /**
@@ -424,7 +463,7 @@ class PhotoController extends Controller
             $q->where('user_id', $user->id);
         })->with('organization')->get();
 
-        return view('photos.edit', compact('photo', 'organizations', 'albums'));
+        return view('media.edit', compact('photo', 'organizations', 'albums'));
     }
 
     /**
@@ -589,7 +628,7 @@ class PhotoController extends Controller
                 ]);
             }
 
-            return redirect()->route('photos.show', $photo->filename)->with('success', 'Photo updated successfully!');
+            return redirect()->route('media.show', $photo->filename)->with('success', 'Photo updated successfully!');
         } catch (\Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([

@@ -482,7 +482,7 @@ body.modal-open {
         <h1 class="page-title">
             My Albums
         </h1>
-        <p class="page-subtitle">Organize your photos into beautiful collections</p>
+        <p class="page-subtitle">Organize your media into beautiful collections</p>
         <div class="mt-3">
             <button class="btn btn-primary" id="createAlbumBtn">
                 <i class="bi bi-plus-circle me-1"></i>Create Album
@@ -538,7 +538,7 @@ body.modal-open {
                             </div>
                         </div>
 
-                        <!-- Photos Usage -->
+                        <!-- Media Usage -->
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
@@ -548,7 +548,7 @@ body.modal-open {
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <small class="text-muted">Photos</small>
+                                        <small class="text-muted">Media</small>
                                         <small class="fw-semibold">
                                             {{ $userLimits->current_photos }} / {{ $userLimits->unlimited_photos ? '∞' : $userLimits->max_photos }}
                                         </small>
@@ -611,7 +611,7 @@ body.modal-open {
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="name">Name A-Z</option>
-                <option value="photos">Most Photos</option>
+                <option value="photos">Most Media</option>
             </select>
             <button class="reset-filters-btn" id="resetFiltersBtn">
                 <i class="bi bi-arrow-clockwise"></i>Reset
@@ -646,7 +646,7 @@ body.modal-open {
                                 <i class="bi bi-calendar me-1"></i>{{ $album->created_at->format('M d, Y') }}
                             </span>
                             <span class="album-photo-count">
-                                <i class="bi bi-image"></i>{{ $album->photos->count() }} photo{{ $album->photos->count() !== 1 ? 's' : '' }}
+                                <i class="bi bi-collection"></i>{{ $album->photos->count() }} media{{ $album->photos->count() !== 1 ? '' : '' }}
                             </span>
                         </div>
                         <div class="album-stats">
@@ -764,7 +764,7 @@ body.modal-open {
                                     <div class="col-md-8">
                                         <div class="details-list">
                                             <div class="detail-item mb-2">
-                                                <div class="detail-label small text-muted">Photos Count</div>
+                                                <div class="detail-label small text-muted">Media Count</div>
                                                 <div class="detail-value small" id="detailPhotosCount">-</div>
                                             </div>
                                             <div class="detail-item mb-2">
@@ -799,7 +799,7 @@ body.modal-open {
                 <i class="bi bi-folder"></i>
             </div>
             <h4>No Albums Yet</h4>
-            <p>Create your first album to organize your photos into beautiful collections</p>
+            <p>Create your first album to organize your media into beautiful collections</p>
             <button class="create-album-btn-empty" id="createFirstAlbumBtn">
                 <i class="bi bi-plus-circle me-1"></i>Create Your First Album
             </button>
@@ -863,7 +863,7 @@ body.modal-open {
                                 @error('cover_image')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">Upload a cover image for your album. If not provided, the first photo in the album will be used as cover.</small>
+                                <small class="text-muted">Upload a cover image for your album. If not provided, the first media in the album will be used as cover.</small>
                             </div>
                         </form>
                     </div>
@@ -1232,6 +1232,24 @@ function handleCreateAlbumClick(e) {
 // Add event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', function() {
     setupCreateAlbumButtons();
+    
+    // Add Enter key listener for edit album form
+    const editAlbumForm = document.getElementById('editAlbumForm');
+    if (editAlbumForm) {
+        editAlbumForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitEditAlbumForm();
+        });
+    }
+    
+    // Add Enter key listener for create album form
+    const createAlbumForm = document.getElementById('createAlbumForm');
+    if (createAlbumForm) {
+        createAlbumForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitCreateAlbumForm();
+        });
+    }
 });
 
 // Start waiting for Bootstrap
@@ -1371,7 +1389,7 @@ function removeCoverImage() {
         return;
     }
     
-    if (confirm('Are you sure you want to remove the cover image from this album? The album will fall back to showing the first photo as cover.')) {
+    if (confirm('Are you sure you want to remove the cover image from this album? The album will fall back to showing the first media as cover.')) {
         fetch(`/albums/${currentAlbumName}/cover`, {
             method: 'DELETE',
             headers: {
@@ -1470,7 +1488,7 @@ function deleteAlbum() {
         return;
     }
     
-    if (confirm('Are you sure you want to delete this album? This action cannot be undone. All photos in this album will be moved to "No Album".')) {
+    if (confirm('Are you sure you want to delete this album? This action cannot be undone. All media in this album will be moved to "No Album".')) {
         fetch(`/albums/${currentAlbumName}`, {
             method: 'DELETE',
             headers: {

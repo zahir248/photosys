@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Organizations - Photo Management System')
+@section('title', 'My Organizations - Media Management System')
 
 @section('content')
 <x-breadcrumb :items="[
@@ -445,7 +445,7 @@
         <h1 class="page-title">
             My Organizations
         </h1>
-        <p class="page-subtitle">Manage your teams and collaborate on photo projects</p>
+        <p class="page-subtitle">Manage your teams and collaborate on media projects</p>
         <div class="mt-3">
             <button type="button" class="create-org-btn" id="createOrganizationBtn">
                 <i class="bi bi-plus-circle me-1"></i>Create Organization
@@ -456,15 +456,15 @@
     <!-- Organization Usage Limits Display -->
     @php
         // Calculate total organization limits across all user's organizations
-        $totalOrgPhotos = 0;
+        $totalOrgMedia = 0;
         $totalOrgStorage = 0;
         $totalOrgAlbums = 0;
         $totalOrgMembers = 0;
-        $maxOrgPhotos = 0;
+        $maxOrgMedia = 0;
         $maxOrgStorage = 0;
         $maxOrgAlbums = 0;
         $maxOrgMembers = 0;
-        $hasUnlimitedPhotos = false;
+        $hasUnlimitedMedia = false;
         $hasUnlimitedStorage = false;
         $hasUnlimitedAlbums = false;
         $hasUnlimitedMembers = false;
@@ -472,17 +472,17 @@
         foreach($organizations as $org) {
             $orgLimits = $org->limits;
             if($orgLimits) {
-                $totalOrgPhotos += $orgLimits->current_photos;
+                $totalOrgMedia += $orgLimits->current_photos;
                 $totalOrgStorage += $orgLimits->current_storage_mb;
                 $totalOrgAlbums += $orgLimits->current_albums;
                 $totalOrgMembers += $orgLimits->current_members;
                 
-                if($orgLimits->unlimited_photos) $hasUnlimitedPhotos = true;
+                if($orgLimits->unlimited_photos) $hasUnlimitedMedia = true;
                 if($orgLimits->unlimited_storage) $hasUnlimitedStorage = true;
                 if($orgLimits->unlimited_albums) $hasUnlimitedAlbums = true;
                 if($orgLimits->unlimited_members) $hasUnlimitedMembers = true;
                 
-                if(!$orgLimits->unlimited_photos) $maxOrgPhotos += $orgLimits->max_photos;
+                if(!$orgLimits->unlimited_photos) $maxOrgMedia += $orgLimits->max_photos;
                 if(!$orgLimits->unlimited_storage) $maxOrgStorage += $orgLimits->max_storage_mb;
                 if(!$orgLimits->unlimited_albums) $maxOrgAlbums += $orgLimits->max_albums;
                 if(!$orgLimits->unlimited_members) $maxOrgMembers += $orgLimits->max_members;
@@ -504,28 +504,28 @@
                 <div class="collapse" id="resourceUsageCollapse">
                     <div class="card-body py-4">
                         <div class="row g-4">
-                        <!-- Photos Usage -->
+                        <!-- Media Usage -->
                         <div class="col-lg-3 col-md-6">
                             <div class="resource-usage-item">
                                 <div class="d-flex align-items-center mb-2">
                                     <div class="resource-icon me-3">
-                                        <i class="bi bi-camera"></i>
+                                        <i class="bi bi-collection"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-semibold">Photos</h6>
+                                        <h6 class="mb-0 fw-semibold">Media</h6>
                                     </div>
                                 </div>
                                 <div class="resource-stats">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="text-muted small">Current Usage</span>
                                         <span class="fw-bold text-primary">
-                                            {{ $totalOrgPhotos }} / {{ $hasUnlimitedPhotos ? '∞' : number_format($maxOrgPhotos) }}
+                                            {{ $totalOrgMedia }} / {{ $hasUnlimitedMedia ? '∞' : number_format($maxOrgMedia) }}
                                         </span>
                                     </div>
-                                    @if(!$hasUnlimitedPhotos && $maxOrgPhotos > 0)
+                                    @if(!$hasUnlimitedMedia && $maxOrgMedia > 0)
                                     <div class="progress" style="height: 6px; border-radius: 3px;">
                                         <div class="progress-bar bg-primary" 
-                                             style="width: {{ min(100, ($totalOrgPhotos / $maxOrgPhotos) * 100) }}%">
+                                             style="width: {{ min(100, ($totalOrgMedia / $maxOrgMedia) * 100) }}%">
                                         </div>
                                     </div>
                                     @endif
@@ -819,7 +819,7 @@
                 <i class="bi bi-people"></i>
             </div>
             <h4>No Organizations Yet</h4>
-            <p>Create your first organization to start collaborating with others on photo projects.</p>
+            <p>Create your first organization to start collaborating with others on media projects.</p>
             <button type="button" class="create-org-btn" id="createFirstOrganizationBtn">
                 <i class="bi bi-plus-circle me-1"></i>Create Your First Organization
             </button>
@@ -865,7 +865,7 @@
                                     <div class="col-12 mb-2">
                                         <label for="organizationCoverImage" class="form-label small">Cover Image (Optional)</label>
                                         <input type="file" class="form-control form-control-sm" id="organizationCoverImage" name="cover_image" accept="image/*">
-                                        <small class="text-muted">Upload a cover image for your organization. If not provided, the first photo in the organization will be used as cover.</small>
+                                        <small class="text-muted">Upload a cover image for your organization. If not provided, the first media in the organization will be used as cover.</small>
                                     </div>
                                 </div>
 
@@ -1206,6 +1206,15 @@ document.addEventListener('DOMContentLoaded', function() {
             resourceUsageIcon.classList.add('bi-chevron-right');
         });
     }
+    
+    // Add form submit event listener for organization form
+    const editOrganizationForm = document.getElementById('editOrganizationForm');
+    if (editOrganizationForm) {
+        editOrganizationForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            submitEditOrganizationForm(); // Call the same function as the Save button
+        });
+    }
 });
 
 // Organization Modal functionality
@@ -1301,7 +1310,7 @@ function removeOrgCoverImage() {
         return;
     }
     
-    if (confirm('Are you sure you want to remove the cover image from this organization? The organization will fall back to showing the first photo as cover.')) {
+    if (confirm('Are you sure you want to remove the cover image from this organization? The organization will fall back to showing the first media as cover.')) {
         fetch(`/organizations/${currentOrganizationName}/cover`, {
             method: 'DELETE',
             headers: {

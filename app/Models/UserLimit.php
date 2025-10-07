@@ -78,6 +78,14 @@ class UserLimit extends Model
     }
 
     /**
+     * Check if user can upload more media (alias for canUploadPhotos)
+     */
+    public function canUploadMedia(): bool
+    {
+        return $this->canUploadPhotos();
+    }
+
+    /**
      * Check if user has storage space for a specific file size
      */
     public function hasStorageSpace(int $fileSizeMb): bool

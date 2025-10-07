@@ -172,9 +172,9 @@ class AlbumController extends Controller
         
         $album = $query->firstOrFail();
         $album->load(['organization', 'photos.user']);
-        $photos = $album->photos()->paginate(12);
+        $medias = $album->photos()->paginate(12);
 
-        return view('albums.show', compact('album', 'photos'));
+        return view('albums.show', compact('album', 'medias'));
     }
 
     /**
@@ -478,14 +478,14 @@ class AlbumController extends Controller
             $album = $query->firstOrFail();
             \Log::info('Album found', ['album_id' => $album->id]);
             
-            $photo = Photo::where('filename', $filename)->whereHas('albums', function($query) use ($album) {
+            $media = Photo::where('filename', $filename)->whereHas('albums', function($query) use ($album) {
                 $query->where('albums.id', $album->id);
             })->firstOrFail();
             
-            \Log::info('Photo found', ['photo_id' => $photo->id]);
+            \Log::info('Photo found', ['photo_id' => $media->id]);
             
             // Remove photo from album
-            $photo->albums()->detach($album->id);
+            $media->albums()->detach($album->id);
             
             \Log::info('Photo removed from album successfully');
             

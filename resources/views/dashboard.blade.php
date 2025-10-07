@@ -13,9 +13,9 @@ google.charts.setOnLoadCallback(drawCharts);
 function drawCharts() {
     var data = google.visualization.arrayToDataTable([
         ['Type', 'Size (MB)'],
-        ['Private', {{ $stats['private_photos_size'] / 1024 / 1024 }}],
-        ['Public', {{ $stats['public_photos_size'] / 1024 / 1024 }}],
-        ['Organization', {{ $stats['org_photos_size'] / 1024 / 1024 }}]
+        ['Private Media', {{ $stats['private_photos_size'] / 1024 / 1024 }}],
+        ['Public Media', {{ $stats['public_photos_size'] / 1024 / 1024 }}],
+        ['Organization Media', {{ $stats['org_photos_size'] / 1024 / 1024 }}]
     ]);
 
     var options = {
@@ -26,7 +26,7 @@ function drawCharts() {
         height: 225
     };
 
-    var chart = new google.visualization.PieChart(document.getElementById('photoTypeChart'));
+    var chart = new google.visualization.PieChart(document.getElementById('mediaTypeChart'));
     chart.draw(data, options);
 
     // Personal Albums Storage Chart
@@ -257,14 +257,14 @@ window.addEventListener('resize', drawCharts);
     color: #2c3e50;
 }
 
-.photo-grid {
+.media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 1rem;
     padding: 1.5rem;
 }
 
-.photo-item {
+.media-item {
     aspect-ratio: 1;
     border-radius: 12px;
     overflow: hidden;
@@ -273,12 +273,12 @@ window.addEventListener('resize', drawCharts);
     transition: all 0.3s ease;
 }
 
-.photo-item:hover {
+.media-item:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-.photo-item img {
+.media-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -434,6 +434,53 @@ window.addEventListener('resize', drawCharts);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
+
+/* Media type specific styles */
+.media-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.media-preview.audio-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview.file-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.media-preview .file-extension {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #495057;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.media-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-preview audio {
+    width: 100%;
+    max-width: 200px;
+}
 </style>
 
 <div class="container dashboard-content">
@@ -442,7 +489,7 @@ window.addEventListener('resize', drawCharts);
         <h1 class="page-title">
             Welcome back, {{ auth()->user()->name }}!
         </h1>
-        <p class="page-subtitle">Here's what's happening with your photo collection today</p>
+        <p class="page-subtitle">Here's what's happening with your media collection today</p>
     </div>
 
     <!-- Stats Cards -->
@@ -450,10 +497,10 @@ window.addEventListener('resize', drawCharts);
         <div class="col-lg-3 col-md-6 mb-3">
             <div class="stats-card primary">
                 <div class="stats-icon" style="background: linear-gradient(135deg, #007bff, #66b3ff); color: white;">
-                    <i class="bi bi-image"></i>
+                    <i class="bi bi-collection"></i>
                 </div>
                 <div class="stats-number">{{ $stats['photos_count'] ?? 0 }}</div>
-                <div class="stats-label">Total Photos</div>
+                <div class="stats-label">Total Media</div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6 mb-3">
@@ -480,7 +527,7 @@ window.addEventListener('resize', drawCharts);
                     <i class="bi bi-eye"></i>
                 </div>
                 <div class="stats-number">{{ $stats['public_photos_count'] ?? 0 }}</div>
-                <div class="stats-label">Public Photos</div>
+                <div class="stats-label">Public Media</div>
             </div>
         </div>
     </div>
@@ -496,14 +543,14 @@ window.addEventListener('resize', drawCharts);
         </div>
         <div class="p-4">
             <div class="row">
-                <!-- Photos Limit -->
+                <!-- Media Limit -->
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="storage-item">
                         <div class="storage-icon" style="background: linear-gradient(135deg, #17a2b8, #5bc0de);">
-                            <i class="bi bi-camera"></i>
+                            <i class="bi bi-collection"></i>
                         </div>
                         <div class="storage-info">
-                            <div class="storage-label">Photos</div>
+                            <div class="storage-label">Media</div>
                             <div class="storage-value">
                                 {{ $userLimits->current_photos }} / {{ $userLimits->unlimited_photos ? '∞' : $userLimits->max_photos }}
                             </div>
@@ -606,33 +653,33 @@ window.addEventListener('resize', drawCharts);
             <h5>Storage Statistics</h5>
         </div>
         <div class="p-4">
-            <!-- Photo Types Storage -->
+            <!-- Media Types Storage -->
             <div class="mb-4">
-                <h6 class="mb-3">Storage by Photo Type</h6>
+                <h6 class="mb-3">Storage by Media Type</h6>
                 <div class="row">
                     <div class="col-md-6">
-                        <div id="photoTypeChart"></div>
+                        <div id="mediaTypeChart"></div>
                     </div>
                     <div class="col-md-6">
                         <div class="storage-legend">
                             <div class="legend-item">
                                 <div class="legend-color" style="background: #dc3545;"></div>
                                 <div class="legend-info">
-                                    <div class="legend-label">Private Photos</div>
+                                    <div class="legend-label">Private Media</div>
                                     <div class="legend-value">{{ number_format($stats['private_photos_size'] / 1024 / 1024, 2) }} MB</div>
                                 </div>
                             </div>
                             <div class="legend-item">
                                 <div class="legend-color" style="background: #28a745;"></div>
                                 <div class="legend-info">
-                                    <div class="legend-label">Public Photos</div>
+                                    <div class="legend-label">Public Media</div>
                                     <div class="legend-value">{{ number_format($stats['public_photos_size'] / 1024 / 1024, 2) }} MB</div>
                                 </div>
                             </div>
                             <div class="legend-item">
                                 <div class="legend-color" style="background: #ffc107;"></div>
                                 <div class="legend-info">
-                                    <div class="legend-label">Organization Photos</div>
+                                    <div class="legend-label">Organization Media</div>
                                     <div class="legend-value">{{ number_format($stats['org_photos_size'] / 1024 / 1024, 2) }} MB</div>
                                 </div>
                             </div>
@@ -653,7 +700,7 @@ window.addEventListener('resize', drawCharts);
                         <thead>
                             <tr>
                                 <th>Organization</th>
-                                <th>Photos</th>
+                                <th>Media</th>
                                 <th>Albums</th>
                                 <th>Unorganized</th>
                                 <th>Total Size</th>
@@ -667,7 +714,7 @@ window.addEventListener('resize', drawCharts);
                                     <td>{{ $org['albums_count'] }}</td>
                                     <td>
                                         {{ number_format(($org['unorganized_size'] ?? 0) / 1024 / 1024, 2) }} MB
-                                        <small class="text-muted">({{ $org['unorganized_count'] ?? 0 }} photos)</small>
+                                        <small class="text-muted">({{ $org['unorganized_count'] ?? 0 }} media)</small>
                                     </td>
                                     <td>{{ number_format($org['total_size'] / 1024 / 1024, 2) }} MB</td>
                                 </tr>
@@ -681,7 +728,7 @@ window.addEventListener('resize', drawCharts);
                                                     <thead>
                                                         <tr>
                                                             <th>Album</th>
-                                                            <th>Photos</th>
+                                                            <th>Media</th>
                                                             <th>Total Size</th>
                                                         </tr>
                                                     </thead>
@@ -724,7 +771,7 @@ window.addEventListener('resize', drawCharts);
                                     <div class="legend-color" style="background: {{ ['#0d6efd', '#20c997', '#ffc107', '#dc3545', '#6610f2', '#198754', '#fd7e14', '#0dcaf0', '#6f42c1'][$index % 9] }};"></div>
                                     <div class="legend-info">
                                         <div class="legend-label">{{ $album['name'] }}</div>
-                                        <div class="legend-value">{{ number_format($album['total_size'] / 1024 / 1024, 2) }} MB ({{ $album['photos_count'] }} photos)</div>
+                                        <div class="legend-value">{{ number_format($album['total_size'] / 1024 / 1024, 2) }} MB ({{ $album['photos_count'] }} media)</div>
                                     </div>
                                 </div>
                                 @endforeach
@@ -739,7 +786,7 @@ window.addEventListener('resize', drawCharts);
                         <thead>
                             <tr>
                                 <th>Album</th>
-                                <th>Photos</th>
+                                <th>Media</th>
                                 <th>Total Size</th>
                             </tr>
                         </thead>
@@ -763,27 +810,47 @@ window.addEventListener('resize', drawCharts);
         <div class="col-lg-6 mb-4">
             <div class="content-card equal-height-card">
                 <div class="content-card-header d-flex justify-content-between align-items-center">
-                    <h5>Recent Photos</h5>
-                    <a href="{{ route('photos.index') }}" class="btn btn-sm btn-outline-primary">
+                    <h5>Recent Media</h5>
+                    <a href="{{ route('media.index') }}" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-arrow-right me-1"></i>View All
                     </a>
                 </div>
                 <div class="content-card-body">
                 @if(isset($recent_photos) && $recent_photos->count() > 0)
-                    <div class="photo-grid">
+                    <div class="media-grid">
                         @foreach($recent_photos as $photo)
-                            <div class="photo-item">
-                                <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                            <div class="media-item">
+                                @if($photo->media_type === 'image')
+                                    <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                                @elseif($photo->media_type === 'video')
+                                    <video class="media-preview" controls>
+                                        <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                @elseif($photo->media_type === 'audio')
+                                    <div class="media-preview audio-preview">
+                                        <i class="bi {{ $photo->icon }}"></i>
+                                        <audio controls>
+                                            <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                            Your browser does not support the audio tag.
+                                        </audio>
+                                    </div>
+                                @else
+                                    <div class="media-preview file-preview">
+                                        <i class="bi {{ $photo->icon }}"></i>
+                                        <span class="file-extension">{{ strtoupper($photo->file_extension) }}</span>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
                 @else
                     <div class="empty-state">
-                        <i class="bi bi-image"></i>
-                        <h6>No photos yet</h6>
-                        <p class="mb-3">Start building your photo collection</p>
-                        <a href="{{ route('photos.create') }}" class="upload-btn">
-                            <i class="bi bi-cloud-upload me-1"></i>Upload Photo
+                        <i class="bi bi-collection"></i>
+                        <h6>No media yet</h6>
+                        <p class="mb-3">Start building your media collection</p>
+                        <a href="{{ route('media.index') }}" class="upload-btn">
+                            <i class="bi bi-cloud-upload me-1"></i>Upload Media
                         </a>
                     </div>
                 @endif
@@ -809,7 +876,7 @@ window.addEventListener('resize', drawCharts);
                             <div class="flex-grow-1">
                                 <h6 class="mb-1 fw-semibold">{{ $album->name }}</h6>
                                 <small class="text-muted">
-                                    <i class="bi bi-image me-1"></i>{{ $album->photos->count() }} photos
+                                    <i class="bi bi-collection me-1"></i>{{ $album->photos->count() }} media
                                     @if($album->organization)
                                         <span class="mx-2">•</span>
                                         <i class="bi bi-people me-1"></i>{{ $album->organization->name }}
@@ -825,8 +892,8 @@ window.addEventListener('resize', drawCharts);
                     <div class="empty-state">
                         <i class="bi bi-folder"></i>
                         <h6>No albums yet</h6>
-                        <p class="mb-3">Organize your photos into albums</p>
-                        <a href="{{ route('albums.create') }}" class="btn btn-primary">
+                        <p class="mb-3">Organize your media into albums</p>
+                        <a href="{{ route('albums.index') }}" class="btn btn-primary">
                             <i class="bi bi-folder-plus me-1"></i>Create Album
                         </a>
                     </div>

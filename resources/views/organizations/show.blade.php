@@ -15,6 +15,52 @@
     border-bottom: 1px solid #e9ecef;
 }
 
+.media-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.media-preview.audio-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview.file-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.media-preview i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.media-preview .file-extension {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #495057;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.media-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-preview audio {
+    width: 100%;
+    max-width: 200px;
+}
+
 .page-title {
     font-size: 1.75rem;
     font-weight: 600;
@@ -36,14 +82,14 @@
     margin-bottom: 0;
 }
 
-.photo-grid {
+.media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.photo-card {
+.media-card {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -53,29 +99,29 @@
     position: relative;
 }
 
-.photo-card:hover {
+.media-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.photo-thumbnail {
+.media-thumbnail {
     position: relative;
     height: 220px;
     overflow: hidden;
 }
 
-.photo-thumbnail img {
+.media-thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-.photo-card:hover .photo-thumbnail img {
+.media-card:hover .media-thumbnail img {
     transform: scale(1.05);
 }
 
-.photo-thumbnail-actions {
+.media-thumbnail-actions {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -85,21 +131,21 @@
     transition: opacity 0.3s ease;
 }
 
-.photo-card:hover .photo-thumbnail-actions {
+.media-card:hover .media-thumbnail-actions {
     opacity: 1;
 }
 
-.photo-thumbnail-actions .btn {
+.media-thumbnail-actions .btn {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
     border-radius: 4px;
 }
 
-.photo-info {
+.media-info {
     padding: 1.25rem;
 }
 
-.photo-title {
+.media-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: #2c3e50;
@@ -107,7 +153,7 @@
     line-height: 1.3;
 }
 
-.photo-description {
+.media-description {
     color: #6c757d;
     font-size: 0.9rem;
     margin-bottom: 1rem;
@@ -118,20 +164,20 @@
     overflow: hidden;
 }
 
-.photo-meta {
+.media-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.photo-date {
+.media-date {
     color: #6c757d;
     font-size: 0.85rem;
     font-weight: 500;
 }
 
-.photo-visibility {
+.media-visibility {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -140,22 +186,22 @@
     letter-spacing: 0.5px;
 }
 
-.photo-visibility.private {
+.media-visibility.private {
     background: #f8d7da;
     color: #721c24;
 }
 
-.photo-visibility.org {
+.media-visibility.org {
     background: #fff3cd;
     color: #856404;
 }
 
-.photo-visibility.public {
+.media-visibility.public {
     background: #d1edff;
     color: #0c5460;
 }
 
-.photo-stats {
+.media-stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -163,30 +209,30 @@
     border-top: 1px solid #f0f0f0;
 }
 
-.photo-meta-left {
+.media-meta-left {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 }
 
-.photo-org {
+.media-org {
     color: #6c757d;
     font-size: 0.85rem;
     display: flex;
     align-items: center;
 }
 
-.photo-org i {
+.media-org i {
     margin-right: 0.25rem;
     color: #007bff;
 }
 
-.photo-actions-right {
+.media-actions-right {
     display: flex;
     gap: 0.5rem;
 }
 
-.photo-actions-right .btn {
+.media-actions-right .btn {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
     border-radius: 4px;
@@ -360,7 +406,7 @@
     font-weight: 500;
 }
 
-.album-photo-count {
+.album-media-count {
     color: #007bff;
     font-size: 0.85rem;
     font-weight: 500;
@@ -621,20 +667,20 @@
 }
 
 /* Upload Modal Styles */
-#uploadPhotoModal .modal-dialog {
+#uploadMediaModal .modal-dialog {
     max-height: 90vh;
     margin: 1.75rem auto;
     overflow: hidden;
 }
 
-#uploadPhotoModal .modal-content {
+#uploadMediaModal .modal-content {
     max-height: 90vh;
     display: flex;
         flex-direction: column;
     overflow: hidden;
 }
 
-#uploadPhotoModal .modal-body {
+#uploadMediaModal .modal-body {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
@@ -652,7 +698,7 @@ body.modal-open {
 }
 
 /* Ensure only modal content scrolls */
-#uploadPhotoModal .modal-body {
+#uploadMediaModal .modal-body {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
 }
@@ -732,7 +778,7 @@ body.modal-open {
 }
 
 /* Upload preview thumbnails - scoped to organization upload modal */
-#uploadPhotoModal #previewArea .photo-thumbnail {
+#uploadMediaModal #previewArea .media-thumbnail {
     position: relative;
     margin-bottom: 1rem;
     border-radius: 8px;
@@ -743,13 +789,13 @@ body.modal-open {
     height: auto;
 }
 
-#uploadPhotoModal #previewArea .photo-thumbnail img {
+#uploadMediaModal #previewArea .media-thumbnail img {
     width: 100%;
     height: 120px;
     object-fit: cover;
 }
 
-#uploadPhotoModal #previewArea .photo-thumbnail .upload-photo-info {
+#uploadMediaModal #previewArea .media-thumbnail .upload-media-info {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -760,7 +806,7 @@ body.modal-open {
     font-size: 0.75rem;
 }
 
-#uploadPhotoModal #previewArea .photo-thumbnail .photo-number {
+#uploadMediaModal #previewArea .media-thumbnail .media-number {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -776,7 +822,7 @@ body.modal-open {
     font-weight: bold;
 }
 
-#uploadPhotoModal #previewArea .photo-thumbnail .remove-btn {
+#uploadMediaModal #previewArea .media-thumbnail .remove-btn {
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
@@ -793,7 +839,7 @@ body.modal-open {
     cursor: pointer;
 }
 
-#uploadPhotoModal #previewArea #singlePreview img {
+#uploadMediaModal #previewArea #singlePreview img {
     width: 100%;
     height: auto;
     max-height: 200px;
@@ -907,38 +953,38 @@ body.modal-open {
         margin-bottom: 0;
     }
     
-    .photo-grid {
+    .media-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
     
-    .photo-card {
+    .media-card {
         margin-bottom: 1rem;
     }
     
-    .photo-thumbnail {
+    .media-thumbnail {
         height: 180px;
     }
     
-    .photo-info {
+    .media-info {
         padding: 1rem;
     }
     
-    .photo-title {
+    .media-title {
         font-size: 1rem;
     }
     
-    .photo-description {
+    .media-description {
         font-size: 0.85rem;
     }
     
-    .photo-meta {
+    .media-meta {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
     
-    .photo-stats {
+    .media-stats {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
@@ -1075,11 +1121,11 @@ body.modal-open {
         padding: 0.25rem 0.5rem;
     }
     
-    .photo-thumbnail {
+    .media-thumbnail {
         height: 160px;
     }
     
-    .photo-info {
+    .media-info {
         padding: 0.75rem;
     }
     
@@ -1108,7 +1154,7 @@ body.modal-open {
 
 /* Tablet Portrait (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-    .photo-grid {
+    .media-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
@@ -1147,7 +1193,7 @@ body.modal-open {
 
 /* Tablet Landscape (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .photo-grid {
+    .media-grid {
         grid-template-columns: repeat(3, 1fr);
     }
     
@@ -1158,7 +1204,7 @@ body.modal-open {
 
 /* Large Desktop (1025px+) - Original styles maintained */
 @media (min-width: 1025px) {
-    .photo-grid {
+    .media-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     }
     
@@ -1182,7 +1228,7 @@ body.modal-open {
                 <div class="mt-2">
                     <span class="badge bg-primary me-2">{{ $organization->albums->count() }} album{{ $organization->albums->count() !== 1 ? 's' : '' }}</span>
                     <span class="badge bg-success me-2">{{ $organization->users->count() }} member{{ $organization->users->count() !== 1 ? 's' : '' }}</span>
-                    <span class="badge bg-info">{{ $organization->albums->sum(function($album) { return $album->photos->count(); }) }} photo{{ $organization->albums->sum(function($album) { return $album->photos->count(); }) !== 1 ? 's' : '' }}</span>
+                    <span class="badge bg-info">{{ $organization->albums->sum(function($album) { return $album->photos->count(); }) }} media{{ $organization->albums->sum(function($album) { return $album->photos->count(); }) !== 1 ? '' : '' }}</span>
                 </div>
                 
                 <!-- Organization Limits Display -->
@@ -1203,15 +1249,15 @@ body.modal-open {
                         <div class="collapse" id="resourceUsageCollapse">
                             <div class="card-body py-4">
                                 <div class="row g-4">
-                                <!-- Photos Usage -->
+                                <!-- Media Usage -->
                                 <div class="col-lg-3 col-md-6">
                                     <div class="resource-usage-item h-100">
                                         <div class="d-flex align-items-center mb-2">
                                             <div class="resource-icon me-3">
-                                                <i class="bi bi-camera"></i>
+                                                <i class="bi bi-collection"></i>
                                             </div>
                                             <div class="flex-grow-1">
-                                                <h6 class="mb-0 fw-semibold">Photos</h6>
+                                                <h6 class="mb-0 fw-semibold">Media</h6>
                                             </div>
                                         </div>
                                         <div class="resource-stats">
@@ -1327,8 +1373,8 @@ body.modal-open {
                 </div>
         @if($organization->owner_id === auth()->id())
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
-                        <i class="bi bi-cloud-upload me-2"></i>Upload Photo
+                    <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
+                        <i class="bi bi-cloud-upload me-2"></i>Upload Media
                     </button>
                     <button class="btn btn-success btn-sm px-3" data-bs-toggle="modal" data-bs-target="#createAlbumModal">
                         <i class="bi bi-folder-plus me-2"></i>Create Album
@@ -1347,46 +1393,66 @@ body.modal-open {
     <!-- Albums Section -->
     <div class="row">
         <div class="col-lg-8">
-            <!-- Organization Photos without Albums -->
+            <!-- Organization Media without Albums -->
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="h5 mb-0">
-                        Unorganized Photos
+                        Unorganized Media
                     </h3>
-                    <span class="badge bg-warning">{{ $organization->photos()->doesntHave('albums')->count() }} photo{{ $organization->photos()->doesntHave('albums')->count() !== 1 ? 's' : '' }}</span>
+                    <span class="badge bg-warning">{{ $organization->photos()->doesntHave('albums')->count() }} media{{ $organization->photos()->doesntHave('albums')->count() !== 1 ? '' : '' }}</span>
                 </div>
 
                 @if($organization->photos()->doesntHave('albums')->count() > 0)
-                    <div class="photo-grid">
+                    <div class="media-grid">
                         @foreach($organization->photos()->doesntHave('albums')->latest()->take(2)->get() as $photo)
-                            <div class="photo-card">
-                                <div class="photo-thumbnail">
-                                    <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
-                                    <div class="photo-thumbnail-actions">
+                            <div class="media-card">
+                                <div class="media-thumbnail">
+                                    @if($photo->media_type === 'image')
+                                        <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                                    @elseif($photo->media_type === 'video')
+                                        <video class="media-preview" controls>
+                                            <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    @elseif($photo->media_type === 'audio')
+                                        <div class="media-preview audio-preview">
+                                            <i class="bi {{ $photo->icon }}"></i>
+                                            <audio controls>
+                                                <source src="{{ $photo->url }}" type="{{ $photo->mime }}">
+                                                Your browser does not support the audio tag.
+                                            </audio>
+                                        </div>
+                                    @else
+                                        <div class="media-preview file-preview">
+                                            <i class="bi {{ $photo->icon }}"></i>
+                                            <span class="file-extension">{{ strtoupper($photo->file_extension) }}</span>
+                                        </div>
+                                    @endif
+                                    <div class="media-thumbnail-actions">
                                         <a href="{{ $photo->url }}" target="_blank" class="btn btn-light btn-sm">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </div>
                                 </div>
-                                <div class="photo-info">
-                                    <h5 class="photo-title">{{ $photo->title }}</h5>
-                                    <p class="photo-description">{{ $photo->description ?? 'No description provided' }}</p>
-                                    <div class="photo-meta">
-                                        <span class="photo-date">
+                                <div class="media-info">
+                                    <h5 class="media-title">{{ $photo->title }}</h5>
+                                    <p class="media-description">{{ $photo->description ?? 'No description provided' }}</p>
+                                    <div class="media-meta">
+                                        <span class="media-date">
                                             <i class="bi bi-calendar me-1"></i>{{ $photo->created_at->format('M d, Y') }}
                                         </span>
-                                        <span class="photo-visibility org">
+                                        <span class="media-visibility org">
                                             <i class="bi bi-people me-1"></i>Organization
                                         </span>
                                     </div>
-                                    <div class="photo-stats">
-                                        <div class="photo-meta-left">
+                                    <div class="media-stats">
+                                        <div class="media-meta-left">
                                             <small class="text-muted">
                                                 <i class="bi bi-person me-1"></i>{{ $photo->user->name }}
                                             </small>
                                         </div>
-                                        <div class="photo-actions-right">
-                                            <a href="{{ route('photos.download', $photo->filename) }}" class="btn btn-outline-primary btn-sm" title="Download">
+                                        <div class="media-actions-right">
+                                            <a href="{{ route('media.download', $photo->filename) }}" class="btn btn-outline-primary btn-sm" title="Download">
                                                 <i class="bi bi-download"></i>
                                             </a>
                                         </div>
@@ -1395,16 +1461,16 @@ body.modal-open {
                             </div>
                         @endforeach
                     </div>
-                    @if($organization->photos()->doesntHave('albums')->count() > 2)
+                    @if($organization->photos()->doesntHave('albums')->count() > 0)
                         <div class="text-center mt-3">
                             <a href="{{ route('organizations.unorganized', $organization->name) }}" class="btn btn-outline-primary">
-                                <i class="bi bi-grid-3x3-gap me-2"></i>See All Unorganized Photos
+                                <i class="bi bi-grid-3x3-gap me-2"></i>See All Unorganized Media
                 </a>
             </div>
         @endif
                 @else
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>No unorganized photos found. All photos are in albums.
+                        <i class="bi bi-info-circle me-2"></i>No unorganized media found. All media are in albums.
     </div>
                 @endif
 </div>
@@ -1425,7 +1491,7 @@ body.modal-open {
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
                         <option value="name">Name A-Z</option>
-                        <option value="photos">Most Photos</option>
+                        <option value="photos">Most Media</option>
                     </select>
                     <button class="reset-filters-btn" id="resetAlbumFiltersBtn">
                         <i class="bi bi-arrow-clockwise"></i>Reset
@@ -1436,7 +1502,7 @@ body.modal-open {
                     @if($organization->albums->count() > 0)
                 <div class="albums-grid" id="albumsGrid">
                             @foreach($organization->albums as $album)
-                        <div class="album-card" data-created="{{ $album->created_at->timestamp }}" data-photos-count="{{ $album->photos->count() }}">
+                        <div class="album-card" data-created="{{ $album->created_at->timestamp }}" data-media-count="{{ $album->photos->count() }}">
                             <div class="album-thumbnail">
                                 @if($album->cover_image_url)
                                     <img src="{{ $album->cover_image_url }}" alt="{{ $album->name }}" class="album-cover-image">
@@ -1461,8 +1527,8 @@ body.modal-open {
                                     <span class="album-date">
                                         <i class="bi bi-calendar me-1"></i>{{ $album->created_at->format('M d, Y') }}
                                     </span>
-                                    <span class="album-photo-count">
-                                        <i class="bi bi-image"></i>{{ $album->photos->count() }} photo{{ $album->photos->count() !== 1 ? 's' : '' }}
+                                    <span class="album-media-count">
+                                        <i class="bi bi-collection"></i>{{ $album->photos->count() }} media{{ $album->photos->count() !== 1 ? '' : '' }}
                                     </span>
                                         </div>
                                         <div class="album-stats">
@@ -1710,8 +1776,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const titleB = b.querySelector('.album-title').textContent.toLowerCase();
             const dateA = new Date(a.dataset.created);
             const dateB = new Date(b.dataset.created);
-            const photosA = parseInt(a.dataset.photosCount);
-            const photosB = parseInt(b.dataset.photosCount);
+            const mediaA = parseInt(a.dataset.mediaCount);
+            const mediaB = parseInt(b.dataset.mediaCount);
 
             switch (sortValue) {
                 case 'oldest':
@@ -1719,7 +1785,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'name':
                     return titleA.localeCompare(titleB);
                 case 'photos':
-                    return photosB - photosA;
+                    return mediaB - mediaA;
                 case 'newest':
                 default:
                     return dateB - dateA;
@@ -2022,13 +2088,13 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<!-- Edit Photo Modal -->
-<div class="modal fade" id="editPhotoModal" tabindex="-1" aria-labelledby="editPhotoModalLabel" aria-hidden="true">
+<!-- Edit Media Modal -->
+<div class="modal fade" id="editMediaModal" tabindex="-1" aria-labelledby="editMediaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header py-2">
-                <h6 class="modal-title" id="editPhotoModalLabel">
-                    <i class="bi bi-gear me-2"></i>Manage Photo
+                <h6 class="modal-title" id="editMediaModalLabel">
+                    <i class="bi bi-gear me-2"></i>Manage Media
                 </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -2205,35 +2271,35 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<!-- Upload Photo Modal -->
-<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+<!-- Upload Media Modal -->
+<div class="modal fade" id="uploadMediaModal" tabindex="-1" aria-labelledby="uploadMediaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header py-2">
-                <h6 class="modal-title" id="uploadPhotoModalLabel">
-                    <i class="bi bi-cloud-upload me-2"></i>Upload Photo
+                <h6 class="modal-title" id="uploadMediaModalLabel">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Media
                 </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-3">
-                <form id="uploadPhotoForm" method="POST" action="{{ route('photos.store') }}" enctype="multipart/form-data">
+                <form id="uploadMediaForm" method="POST" action="{{ route('media.store') }}" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="organization_id" value="{{ $organization->id }}">
                     
                     <!-- File Upload Area -->
                     <div class="mb-2">
-                        <label for="uploadPhoto" class="form-label small">Select Photos <span class="text-danger">*</span></label>
+                        <label for="uploadMedia" class="form-label small">Select Media <span class="text-danger">*</span></label>
                         <div class="upload-area" id="uploadArea">
                             <div class="upload-content">
                                 <i class="bi bi-cloud-upload upload-icon"></i>
-                                <p class="upload-text">Click to browse or drag and drop your photos here</p>
-                                <p class="upload-subtext">Maximum file size: 10MB per photo. Supported formats: JPEG, PNG, GIF, WebP. You can select multiple photos at once.</p>
+                                <p class="upload-text">Click to browse or drag and drop your media here</p>
+                                <p class="upload-subtext">Maximum file size: 100MB per media. Supported formats: Images, Videos, Audio, Documents, Archives. You can select multiple media at once.</p>
                             </div>
                             <input type="file" 
                                    class="form-control d-none" 
-                                   id="uploadPhoto" 
+                                   id="uploadMedia" 
                                    name="photos[]" 
-                                   accept="image/*" 
+                                   accept="*/*" 
                                    multiple
                                    required>
                         </div>
@@ -2253,8 +2319,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-2">
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
                                 <small class="text-muted" id="fileInfo"></small>
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="clearAllBtn" onclick="clearAllFiles()" style="display: none;">
+                                    <i class="bi bi-trash me-1"></i>Clear All
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -2263,12 +2332,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-2" id="titleField" style="display: none;">
-                                <label for="uploadTitle" class="form-label small">Photo Title (Optional)</label>
+                                <label for="uploadTitle" class="form-label small">Media Title (Optional)</label>
                                 <input type="text" 
                                        class="form-control form-control-sm" 
                                        id="uploadTitle" 
                                        name="title" 
-                                       placeholder="Enter a title for your photo">
+                                       placeholder="Enter a title for your media">
                                 <small class="text-muted">Leave empty to use filename as title</small>
                             </div>
                         </div>
@@ -2310,8 +2379,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </form>
             </div>
             <div class="modal-footer py-2">
-                <button type="button" class="btn btn-primary btn-sm" onclick="submitUploadPhotoForm()" id="modalUploadBtn">
-                    <i class="bi bi-cloud-upload me-1"></i>Upload Photo
+                <button type="button" class="btn btn-primary btn-sm" onclick="submitUploadMediaForm()" id="modalUploadBtn">
+                    <i class="bi bi-cloud-upload me-1"></i>Upload Media
                 </button>
             </div>
         </div>
@@ -2535,7 +2604,9 @@ function submitEditOrganizationForm() {
             setTimeout(() => {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editOrganizationModal'));
+                if (modal) {
                 modal.hide();
+                }
                 
                 // Redirect to the new organization URL
                 window.location.href = `/organizations/${data.organization.name}`;
@@ -2579,7 +2650,9 @@ function deleteOrganization() {
             setTimeout(() => {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editOrganizationModal'));
+                if (modal) {
                 modal.hide();
+                }
                 
                 // Redirect to organizations index
                 window.location.href = '{{ route("organizations.index") }}';
@@ -2674,7 +2747,9 @@ function submitInviteUserForm() {
         if (data.success) {
             // Close modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('inviteUserModal'));
+            if (modal) {
             modal.hide();
+            }
             
             // Reset form
             form.reset();
@@ -2698,7 +2773,7 @@ function submitInviteUserForm() {
 // Create Album Modal Functions
 function editPhoto(filename) {
     // Show loading state
-    const modalElement = document.getElementById('editPhotoModal');
+    const modalElement = document.getElementById('editMediaModal');
     if (!modalElement) {
         console.error('Edit modal not found!');
         return;
@@ -2741,7 +2816,7 @@ function editPhoto(filename) {
     document.addEventListener('keydown', escapeHandler);
 
     // Fetch photo data
-    fetch(`/photos/${filename}/edit-data`)
+    fetch(`/media/${filename}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -2765,6 +2840,20 @@ function editPhoto(filename) {
             document.getElementById('modalTitle').value = data.photo.title;
             document.getElementById('modalDescription').value = data.photo.description || '';
 
+            // Ensure organization_id is preserved
+            const organizationIdField = document.querySelector('input[name="organization_id"]');
+            if (organizationIdField) {
+                console.log('Organization ID field found, current value:', organizationIdField.value);
+                organizationIdField.value = '{{ $organization->id }}';
+                console.log('Organization ID field set to:', organizationIdField.value);
+                console.log('Organization ID field element:', organizationIdField);
+            } else {
+                console.error('Organization ID field not found!');
+                // Try to find all input fields to debug
+                const allInputs = document.querySelectorAll('input');
+                console.log('All input fields found:', allInputs);
+            }
+
             // Populate details tab
             populateDetailsTab(data.photo);
 
@@ -2778,7 +2867,7 @@ function editPhoto(filename) {
             }
 
             // Set form action
-            document.getElementById('editPhotoForm').action = `/photos/${filename}`;
+            document.getElementById('editPhotoForm').action = `/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
@@ -2790,6 +2879,24 @@ function editPhoto(filename) {
 function submitEditForm() {
     const form = document.getElementById('editPhotoForm');
     const formData = new FormData(form);
+    
+    // Debug: Log form data to console
+    console.log('Form action:', form.action);
+    console.log('Form data entries:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, ':', value);
+    }
+    
+    // Check if organization_id is in the form data
+    const organizationIdValue = formData.get('organization_id');
+    console.log('Organization ID in form data:', organizationIdValue);
+    
+    // Also check if the field exists in the form
+    const orgIdField = form.querySelector('input[name="organization_id"]');
+    console.log('Organization ID field in form:', orgIdField);
+    if (orgIdField) {
+        console.log('Organization ID field value:', orgIdField.value);
+    }
     
     fetch(form.action, {
         method: 'POST',
@@ -2803,9 +2910,9 @@ function submitEditForm() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showToast('success', 'Photo updated successfully');
+            showToast('success', 'Media updated successfully');
             // Close modal and refresh page
-            const modal = document.getElementById('editPhotoModal');
+            const modal = document.getElementById('editMediaModal');
             if (modal) {
                 const bsModal = bootstrap.Modal.getInstance(modal);
                 if (bsModal) {
@@ -2823,20 +2930,40 @@ function submitEditForm() {
             }
             setTimeout(() => window.location.reload(), 500);
         } else {
-            showToast('error', data.message || 'Error updating photo');
+            showToast('error', data.message || 'Error updating media');
         }
     })
     .catch(error => {
-        console.error('Error updating photo:', error);
+        console.error('Error updating media:', error);
         if (error.errors) {
             // Join all error messages
             const errorMessage = Object.values(error.errors).flat().join(', ');
             showToast('error', errorMessage);
         } else {
-            showToast('error', 'Error updating photo. Please try again.');
+            showToast('error', 'Error updating media. Please try again.');
         }
     });
 }
+
+// Add form submit event listener to handle Enter key presses
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.getElementById('editPhotoForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            submitEditForm(); // Call the same function as the Save button
+        });
+    }
+    
+    // Add form submit event listener for organization form
+    const editOrganizationForm = document.getElementById('editOrganizationForm');
+    if (editOrganizationForm) {
+        editOrganizationForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            submitEditOrganizationForm(); // Call the same function as the Save button
+        });
+    }
+});
 
 function populateDetailsTab(photo) {
     // Albums
@@ -2880,7 +3007,7 @@ function populateDetailsTab(photo) {
 }
 
 function closeEditModal(scrollPos) {
-    const modalElement = document.getElementById('editPhotoModal');
+    const modalElement = document.getElementById('editMediaModal');
     if (!modalElement) return;
 
     modalElement.classList.remove('show');
@@ -2939,7 +3066,9 @@ function submitCreateAlbumForm() {
             setTimeout(() => {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('createAlbumModal'));
+                if (modal) {
                 modal.hide();
+                }
                 
                 // Reset form
                 form.reset();
@@ -2957,36 +3086,146 @@ function submitCreateAlbumForm() {
     });
 }
 
-// Upload Photo Modal Functions
+// Global variables for upload modal
+let selectedFiles = [];
+
+// Global function for clearing all files in upload modal
+function clearAllFiles() {
+    // Clear the file input
+    const uploadMediaInput = document.getElementById('uploadMedia');
+    if (uploadMediaInput) {
+        uploadMediaInput.value = '';
+    }
+    
+    // Reset global selectedFiles array
+    if (typeof selectedFiles !== 'undefined') {
+        selectedFiles = [];
+    }
+    
+    // Hide preview area
+    const previewArea = document.getElementById('previewArea');
+    if (previewArea) {
+        previewArea.classList.add('d-none');
+    }
+    
+    // Reset form fields
+    const titleField = document.getElementById('uploadTitle');
+    const descriptionField = document.getElementById('uploadDescription');
+    if (titleField) {
+        const titleFieldContainer = titleField.closest('.mb-2');
+        if (titleFieldContainer) titleFieldContainer.style.display = 'none';
+    }
+    if (descriptionField) {
+        const descriptionFieldContainer = descriptionField.closest('.mb-2');
+        if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'none';
+    }
+    
+    // Reset upload button
+    const uploadBtn = document.getElementById('modalUploadBtn');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+    }
+    
+    // Hide clear all button
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.style.display = 'none';
+    }
+}
+
+// Upload Media Modal Functions
 document.addEventListener('DOMContentLoaded', function() {
     const uploadArea = document.getElementById('uploadArea');
-    const uploadPhotoInput = document.getElementById('uploadPhoto');
+    const uploadMediaInput = document.getElementById('uploadMedia');
     const previewArea = document.getElementById('previewArea');
     const previewImage = document.getElementById('previewImage');
     const fileInfo = document.getElementById('fileInfo');
     const titleField = document.getElementById('titleField');
     const modalUploadBtn = document.getElementById('modalUploadBtn');
 
-    if (!uploadArea || !uploadPhotoInput) return;
+    if (!uploadArea || !uploadMediaInput) return;
 
-    uploadArea.addEventListener('click', () => uploadPhotoInput.click());
+    uploadArea.addEventListener('click', () => uploadMediaInput.click());
     uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            uploadPhotoInput.files = files;
-            handleFileSelect(files);
+        const newFiles = e.dataTransfer.files;
+        if (newFiles.length > 0) {
+            // Get the dropped files
+            const droppedFiles = Array.from(newFiles);
+            
+            // Filter out duplicates based on name and size
+            const uniqueFiles = droppedFiles.filter(newFile => 
+                !selectedFiles.some(existingFile => 
+                    existingFile.name === newFile.name && existingFile.size === newFile.size
+                )
+            );
+            
+            if (uniqueFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...uniqueFiles];
+                
+                // Create new FileList from our global array
+                const dt = new DataTransfer();
+                selectedFiles.forEach(file => dt.items.add(file));
+                uploadMediaInput.files = dt.files;
+                
+                // Handle the combined files
+                handleFileSelect(selectedFiles);
+            }
         }
     });
 
-    uploadPhotoInput.addEventListener('change', (e) => {
+    uploadMediaInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
-            handleFileSelect(e.target.files);
+            // Get the new files from the event
+            const newFiles = Array.from(e.target.files);
+            
+            // Filter out duplicates based on name and size
+            const uniqueFiles = newFiles.filter(newFile => 
+                !selectedFiles.some(existingFile => 
+                    existingFile.name === newFile.name && existingFile.size === newFile.size
+                )
+            );
+            
+            if (uniqueFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...uniqueFiles];
+                
+                // Create new FileList from our global array
+                const dt = new DataTransfer();
+                selectedFiles.forEach(file => dt.items.add(file));
+                uploadMediaInput.files = dt.files;
+                
+                // Handle the combined files
+                handleFileSelect(selectedFiles);
+            }
         }
     });
+
+    function getFileIcon(mimeType) {
+        if (mimeType.startsWith('image/')) {
+            return 'bi-image';
+        } else if (mimeType.startsWith('video/')) {
+            return 'bi-play-circle';
+        } else if (mimeType.startsWith('audio/')) {
+            return 'bi-music-note';
+        } else if (mimeType.includes('pdf')) {
+            return 'bi-file-pdf';
+        } else if (mimeType.includes('word') || mimeType.includes('document')) {
+            return 'bi-file-word';
+        } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+            return 'bi-file-excel';
+        } else if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) {
+            return 'bi-file-ppt';
+        } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) {
+            return 'bi-file-zip';
+        } else if (mimeType.includes('text')) {
+            return 'bi-file-text';
+        } else {
+            return 'bi-file';
+        }
+    }
 
     function handleFileSelect(files) {
         if (!files || files.length === 0) return;
@@ -3005,9 +3244,48 @@ document.addEventListener('DOMContentLoaded', function() {
                     multiplePreview.classList.add('d-none');
                     fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
                     if (titleField) titleField.style.display = 'block';
-                    if (modalUploadBtn) modalUploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Photo';
+                    const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                    if (descriptionField) descriptionField.style.display = 'block';
+                    if (modalUploadBtn) modalUploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+                    
+                    // Show clear all button
+                    const clearAllBtn = document.getElementById('clearAllBtn');
+                    if (clearAllBtn) clearAllBtn.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
+            } else {
+                // Handle non-image files for single preview
+                singlePreview.classList.remove('d-none');
+                multiplePreview.classList.add('d-none');
+                
+                // Clear any existing content
+                singlePreview.innerHTML = '';
+                
+                // Create icon container for non-image files
+                const iconContainer = document.createElement('div');
+                iconContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; background: #f8f9fa; border-radius: 8px; margin-bottom: 1rem;';
+                
+                iconContainer.innerHTML = `
+                    <i class="bi ${getFileIcon(file.type)}" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                    <div class="fw-bold">${file.name}</div>
+                    <div class="text-muted">${formatFileSize(file.size)}</div>
+                `;
+                
+                singlePreview.appendChild(iconContainer);
+                
+                fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                
+                // Show title and description fields for single file
+                if (titleField) titleField.style.display = 'block';
+                const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                if (descriptionField) descriptionField.style.display = 'block';
+                
+                // Update button text for single media
+                if (modalUploadBtn) modalUploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+                
+                // Show clear all button
+                const clearAllBtn = document.getElementById('clearAllBtn');
+                if (clearAllBtn) clearAllBtn.style.display = 'block';
             }
         } else {
             singlePreview.classList.add('d-none');
@@ -3016,56 +3294,124 @@ document.addEventListener('DOMContentLoaded', function() {
             thumbnailsContainer.innerHTML = '';
 
             Array.from(files).forEach((file, index) => {
-                if (!file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
                     const col = document.createElement('div');
                     col.className = 'col-md-3 col-sm-4 col-6';
 
                     const thumbnail = document.createElement('div');
-                    thumbnail.className = 'photo-thumbnail';
+                thumbnail.className = 'media-thumbnail';
                     thumbnail.dataset.index = index;
 
+                if (file.type.startsWith('image/')) {
+                    // Handle image files
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.alt = `Photo ${index + 1}`;
+                        thumbnail.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Handle non-image files
+                    const fileIconContainer = document.createElement('div');
+                    fileIconContainer.className = 'file-icon-container';
+                    fileIconContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 120px; background: #f8f9fa; border-radius: 8px;';
+                    
+                    fileIconContainer.innerHTML = `
+                        <i class="bi ${getFileIcon(file.type)}" style="font-size: 2rem; color: #6c757d; margin-bottom: 0.5rem;"></i>
+                        <div class="fw-bold small text-center" style="font-size: 0.7rem;">${file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name}</div>
+                    `;
+                    
+                    thumbnail.appendChild(fileIconContainer);
+                }
 
                     const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
                     removeBtn.className = 'remove-btn';
                     removeBtn.innerHTML = '×';
-                    removeBtn.onclick = () => removePhoto(index);
+                removeBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeMedia(index);
+                };
 
                     const photoNumber = document.createElement('div');
-                    photoNumber.className = 'photo-number';
+                photoNumber.className = 'media-number';
                     photoNumber.textContent = index + 1;
 
                     const photoInfo = document.createElement('div');
-                    photoInfo.className = 'upload-photo-info';
+                photoInfo.className = 'upload-media-info';
                     photoInfo.innerHTML = `<div class="fw-bold">${file.name}</div><div>${formatFileSize(file.size)}</div>`;
 
-                    thumbnail.appendChild(img);
                     thumbnail.appendChild(removeBtn);
                     thumbnail.appendChild(photoNumber);
                     thumbnail.appendChild(photoInfo);
                     col.appendChild(thumbnail);
                     thumbnailsContainer.appendChild(col);
-                };
-                reader.readAsDataURL(file);
             });
 
-            fileInfo.textContent = `${files.length} photos selected`;
+            fileInfo.textContent = `${files.length} media selected`;
             if (titleField) titleField.style.display = 'none';
-            if (modalUploadBtn) modalUploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${files.length} Photos`;
+            const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+            if (descriptionField) descriptionField.style.display = 'none';
+            if (modalUploadBtn) modalUploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${files.length} Media`;
+            
+            // Show clear all button
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            if (clearAllBtn) clearAllBtn.style.display = 'block';
         }
     }
 
-    function removePhoto(index) {
-        const files = Array.from(uploadPhotoInput.files);
-        files.splice(index, 1);
+    function removeMedia(index) {
+        console.log('Removing file at index:', index, 'from files:', selectedFiles.length);
+        
+        // Validate index
+        if (index < 0 || index >= selectedFiles.length) {
+            console.error('Invalid index for file removal:', index);
+            return;
+        }
+        
+        // Remove file from our global array
+        selectedFiles.splice(index, 1);
+        
+        // Update the file input
         const dt = new DataTransfer();
-        files.forEach(f => dt.items.add(f));
-        uploadPhotoInput.files = dt.files;
-        handleFileSelect(uploadPhotoInput.files);
+        selectedFiles.forEach(f => dt.items.add(f));
+        uploadMediaInput.files = dt.files;
+        
+        console.log('Files after removal:', selectedFiles.length);
+        
+        if (selectedFiles.length === 0) {
+            // Hide preview area when no files are left
+            document.getElementById('previewArea').classList.add('d-none');
+            // Reset form fields
+            const titleField = document.getElementById('uploadTitle');
+            const descriptionField = document.getElementById('uploadDescription');
+            if (titleField) {
+                const titleFieldContainer = titleField.closest('.mb-2');
+                if (titleFieldContainer) titleFieldContainer.style.display = 'none';
+            }
+            if (descriptionField) {
+                const descriptionFieldContainer = descriptionField.closest('.mb-2');
+                if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'none';
+            }
+            // Reset upload button
+            const uploadBtn = document.getElementById('modalUploadBtn');
+            if (uploadBtn) uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+            // Hide clear all button
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            if (clearAllBtn) clearAllBtn.style.display = 'none';
+        } else {
+            // Clear any existing previews first
+            const singlePreview = document.getElementById('singlePreview');
+            const multiplePreview = document.getElementById('multiplePreview');
+            if (multiplePreview) {
+                const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+                if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
+            }
+            
+            handleFileSelect(selectedFiles);
+        }
     }
 
     function formatFileSize(bytes) {
@@ -3076,17 +3422,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function submitUploadPhotoForm() {
-    const form = document.getElementById('uploadPhotoForm');
+function submitUploadMediaForm() {
+    const form = document.getElementById('uploadMediaForm');
     const formData = new FormData(form);
     
     // Add organization_id to the form data
     formData.append('organization_id', '{{ $organization->id }}');
     
     // Check if files are selected
-    const fileInput = document.getElementById('uploadPhoto');
+    const fileInput = document.getElementById('uploadMedia');
     if (!fileInput.files || fileInput.files.length === 0) {
-        showToast('Please select at least one photo to upload.', 'error');
+        showToast('Please select at least one media to upload.', 'error');
         return;
     }
     
@@ -3097,7 +3443,7 @@ function submitUploadPhotoForm() {
         uploadBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Uploading...';
     }
     
-    fetch('{{ route("photos.store") }}', {
+    fetch('{{ route("media.store") }}', {
         method: 'POST',
         body: formData,
         headers: {
@@ -3112,7 +3458,7 @@ function submitUploadPhotoForm() {
         } else {
             return response.json().then(data => {
                 // Create a more specific error message based on the response
-                let errorMessage = 'Failed to upload photo';
+                let errorMessage = 'Failed to upload media';
                 
                 if (data.message) {
                     errorMessage = data.message;
@@ -3132,14 +3478,14 @@ function submitUploadPhotoForm() {
         if (data.success) {
             // Show success message
             const message = data.photos && data.photos.length > 1 
-                ? `${data.photos.length} photos uploaded successfully!`
-                : 'Photo uploaded successfully!';
+                ? `${data.photos.length} media uploaded successfully!`
+                : 'Media uploaded successfully!';
             showToast(message, 'success');
 
             // Wait a bit before reloading to show the toast
             setTimeout(() => {
                 // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadPhotoModal'));
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadMediaModal'));
                 if (modal) {
                     modal.hide();
                 }
@@ -3160,11 +3506,11 @@ function submitUploadPhotoForm() {
                 location.reload();
             }, 1000);
         } else {
-            throw new Error(data.message || 'Failed to upload photo');
+            throw new Error(data.message || 'Failed to upload media');
         }
     })
     .catch(error => {
-        console.error('Error uploading photo:', error);
+        console.error('Error uploading media:', error);
         
         // Create a more user-friendly error message with specific styling
         let errorMessage = error.message;
@@ -3194,11 +3540,11 @@ function submitUploadPhotoForm() {
         const uploadBtn = document.getElementById('modalUploadBtn');
         if (uploadBtn) {
             uploadBtn.disabled = false;
-            const fileInput = document.getElementById('uploadPhoto');
+            const fileInput = document.getElementById('uploadMedia');
             if (fileInput.files && fileInput.files.length > 1) {
-                uploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${fileInput.files.length} Photos`;
+                uploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${fileInput.files.length} Media`;
             } else {
-                uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Photo';
+                uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
             }
         }
     });
@@ -3445,7 +3791,9 @@ function submitEditAlbumForm() {
             setTimeout(() => {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editAlbumModal'));
+                if (modal) {
                 modal.hide();
+                }
                 
                 // Reload page to show updated album
                 location.reload();
@@ -3510,7 +3858,9 @@ function deleteAlbum() {
             setTimeout(() => {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editAlbumModal'));
+                if (modal) {
                 modal.hide();
+                }
                 
                 // Reload page to show updated albums
                 location.reload();
@@ -3535,7 +3885,7 @@ document.getElementById('editOrganizationModal').addEventListener('show.bs.modal
 
 // Modal scroll prevention for upload modal
 document.addEventListener('DOMContentLoaded', function() {
-    const uploadModal = document.getElementById('uploadPhotoModal');
+    const uploadModal = document.getElementById('uploadMediaModal');
     if (uploadModal) {
         let scrollPosition = 0;
         

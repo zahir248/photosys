@@ -126,7 +126,7 @@
 }
 
 /* Upload preview thumbnails - more specific selectors to override global styles */
-#previewArea .media-thumbnail {
+#previewArea .photo-thumbnail {
     position: relative !important;
     margin-bottom: 1rem !important;
     border-radius: 8px !important;
@@ -137,18 +137,18 @@
     height: auto !important;
 }
 
-#previewArea .media-thumbnail:hover {
+#previewArea .photo-thumbnail:hover {
     transform: scale(1.02) !important;
 }
 
-#previewArea .media-thumbnail img {
+#previewArea .photo-thumbnail img {
     width: 100% !important;
     height: 120px !important;
     object-fit: cover !important;
     border-radius: 0 !important;
 }
 
-#previewArea .media-thumbnail .media-info {
+#previewArea .photo-thumbnail .photo-info {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -159,7 +159,7 @@
     font-size: 0.75rem;
 }
 
-#previewArea .media-thumbnail .media-number {
+#previewArea .photo-thumbnail .photo-number {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -175,7 +175,7 @@
     font-weight: bold;
 }
 
-#previewArea .media-thumbnail .remove-btn {
+#previewArea .photo-thumbnail .remove-btn {
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
@@ -193,11 +193,11 @@
     transition: background 0.2s ease;
 }
 
-#previewArea .media-thumbnail .remove-btn:hover {
+#previewArea .photo-thumbnail .remove-btn:hover {
     background: rgba(220, 53, 69, 1);
 }
 
-/* Single media preview styling - override global media-thumbnail styles */
+/* Single photo preview styling - override global photo-thumbnail styles */
 #previewArea #singlePreview img {
     width: 100% !important;
     height: auto !important;
@@ -214,7 +214,7 @@
     <h1 class="page-title">
         <i class="bi bi-cloud-upload text-primary"></i> Upload Media
     </h1>
-    <p class="page-subtitle">Share your media with the community</p>
+    <p class="page-subtitle">Share your media files with the community</p>
 </div>
 
 <div class="row justify-content-center">
@@ -226,22 +226,21 @@
                     
                     <!-- File Upload Area -->
                     <div class="mb-4">
-                        <label for="photo" class="form-label fw-semibold">Select Media</label>
+                        <label for="media" class="form-label fw-semibold">Select Media Files</label>
                         <div class="upload-area" id="uploadArea">
                             <div class="upload-content">
                                 <i class="bi bi-cloud-upload upload-icon"></i>
-                                <p class="upload-text">Click to browse or drag and drop your media here</p>
-                                <p class="upload-subtext">Maximum file size: 100MB per media. Supported formats: Images, Videos, Audio, Documents, Archives. You can select multiple media at once.</p>
+                                <p class="upload-text">Click to browse or drag and drop your media files here</p>
+                                <p class="upload-subtext">Maximum file size: 100MB per file. Supported formats: Images, Videos, Audio, Documents, Archives. You can select multiple files at once.</p>
                             </div>
                             <input type="file" 
-                                   class="form-control d-none @error('photos') is-invalid @enderror" 
-                                   id="photo" 
-                                   name="photos[]" 
-                                   accept="*/*" 
+                                   class="form-control d-none @error('media') is-invalid @enderror" 
+                                   id="media" 
+                                   name="media[]" 
                                    multiple
                                    required>
                         </div>
-                        @error('photos')
+                        @error('media')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                         
@@ -266,17 +265,17 @@
                         </div>
                     </div>
 
-                    <!-- Media Information -->
+                    <!-- Photo Information -->
                     <div class="row">
                         <div class="col-md-6" id="titleField" style="display: none;">
                             <div class="mb-3">
-                                <label for="title" class="form-label">Media Title</label>
+                                <label for="title" class="form-label">Photo Title</label>
                                 <input type="text" 
                                        class="form-control @error('title') is-invalid @enderror" 
                                        id="title" 
                                        name="title" 
                                        value="{{ old('title') }}" 
-                                       placeholder="Enter a title for your media">
+                                       placeholder="Enter a title for your photo">
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -299,7 +298,7 @@
                                 @error('organization_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">Leave empty to store as personal media</small>
+                                <small class="text-muted">Leave empty to store as personal photo</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -332,7 +331,7 @@
                                   id="description" 
                                   name="description" 
                                   rows="3" 
-                                  placeholder="Describe your media...">{{ old('description') }}</textarea>
+                                  placeholder="Describe your photo...">{{ old('description') }}</textarea>
                         @error('description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -345,21 +344,21 @@
                                 <input type="radio" name="visibility" value="private" id="private" {{ old('visibility', 'private') == 'private' ? 'checked' : '' }}>
                                 <label for="private" class="mb-0">
                                     <i class="bi bi-lock text-danger"></i> <strong>Private</strong>
-                                    <br><small class="text-muted">Only you can see this media</small>
+                                    <br><small class="text-muted">Only you can see this photo</small>
                                 </label>
                             </div>
                             <div class="visibility-option {{ old('visibility') == 'org' ? 'selected' : '' }}" onclick="selectVisibility('org')">
                                 <input type="radio" name="visibility" value="org" id="org" {{ old('visibility') == 'org' ? 'checked' : '' }}>
                                 <label for="org" class="mb-0">
                                     <i class="bi bi-people text-warning"></i> <strong>Organization</strong>
-                                    <br><small class="text-muted">All organization members can see this media</small>
+                                    <br><small class="text-muted">All organization members can see this photo</small>
                                 </label>
                             </div>
                             <div class="visibility-option {{ old('visibility') == 'public' ? 'selected' : '' }}" onclick="selectVisibility('public')">
                                 <input type="radio" name="visibility" value="public" id="public" {{ old('visibility') == 'public' ? 'checked' : '' }}>
                                 <label for="public" class="mb-0">
                                     <i class="bi bi-globe text-success"></i> <strong>Public</strong>
-                                    <br><small class="text-muted">Anyone can see this media publicly</small>
+                                    <br><small class="text-muted">Anyone can see this photo publicly</small>
                                 </label>
                             </div>
                         </div>
@@ -385,9 +384,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const orgSelect = document.getElementById('organization_id');
-    const albumSelect = document.getElementById('modalAlbums');
+    const albumSelect = document.getElementById('album_id');
     const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('photo');
+    const fileInput = document.getElementById('media');
     const previewArea = document.getElementById('previewArea');
     const previewImage = document.getElementById('previewImage');
     const fileInfo = document.getElementById('fileInfo');
@@ -427,29 +426,35 @@ document.addEventListener('DOMContentLoaded', function() {
             if (files.length === 1) {
                 // Single media preview
                 const file = files[0];
-                if (file.type) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        if (file.type.startsWith('image/')) {
-                            previewImage.src = e.target.result;
-                        } else {
-                            // For non-image files, show a generic preview
-                            previewImage.src = getFileIcon(file.type);
-                            previewImage.style.width = '100px';
-                            previewImage.style.height = '100px';
-                            previewImage.style.objectFit = 'contain';
-                        }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (file.type.startsWith('image/')) {
+                        previewImage.src = e.target.result;
                         singlePreview.classList.remove('d-none');
                         multiplePreview.classList.add('d-none');
-                        
-                        fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
-                        // Show title field for single media
-                        document.getElementById('titleField').style.display = 'block';
-                        document.getElementById('title').required = false;
-                        document.getElementById('uploadButton').innerHTML = '<i class="bi bi-cloud-upload"></i> Upload Media';
-                    };
-                    reader.readAsDataURL(file);
-                }
+                    } else {
+                        // For non-image files, show a generic preview
+                        previewImage.src = '';
+                        singlePreview.classList.remove('d-none');
+                        multiplePreview.classList.add('d-none');
+                        previewImage.style.display = 'none';
+                        // Add file icon and info
+                        const fileIcon = getFileIcon(file.type);
+                        previewImage.parentElement.innerHTML = `
+                            <div class="media-preview file-preview">
+                                <i class="bi ${fileIcon}"></i>
+                                <span class="file-extension">${file.name.split('.').pop().toUpperCase()}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                    // Show title field for single media
+                    document.getElementById('titleField').style.display = 'block';
+                    document.getElementById('title').required = false;
+                    document.getElementById('uploadButton').innerHTML = '<i class="bi bi-cloud-upload"></i> Upload Media';
+                };
+                reader.readAsDataURL(file);
             } else {
                 // Multiple media preview
                 singlePreview.classList.add('d-none');
@@ -459,69 +464,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 const thumbnailsContainer = document.getElementById('thumbnailsContainer');
                 thumbnailsContainer.innerHTML = '';
                 
-                // Create thumbnails for each media
+                // Create thumbnails for each media file
                 Array.from(files).forEach((file, index) => {
-                    if (file.type) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
                         const col = document.createElement('div');
                         col.className = 'col-md-3 col-sm-4 col-6';
                         
                         const thumbnail = document.createElement('div');
-                        thumbnail.className = 'media-thumbnail';
+                        thumbnail.className = 'photo-thumbnail';
                         thumbnail.dataset.index = index;
                         
-                        const img = document.createElement('img');
                         if (file.type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                img.src = e.target.result;
-                            };
-                            reader.readAsDataURL(file);
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = `Media ${index + 1}`;
+                            thumbnail.appendChild(img);
                         } else {
-                            // For non-image files, show a generic icon
-                            img.src = getFileIcon(file.type);
-                            img.style.width = '100%';
-                            img.style.height = '120px';
-                            img.style.objectFit = 'contain';
-                            img.style.backgroundColor = '#f8f9fa';
+                            const mediaPreview = document.createElement('div');
+                            mediaPreview.className = 'media-preview file-preview';
+                            const fileIcon = getFileIcon(file.type);
+                            mediaPreview.innerHTML = `
+                                <i class="bi ${fileIcon}"></i>
+                                <span class="file-extension">${file.name.split('.').pop().toUpperCase()}</span>
+                            `;
+                            thumbnail.appendChild(mediaPreview);
                         }
-                        img.alt = `Media ${index + 1}`;
                         
                         const removeBtn = document.createElement('button');
                         removeBtn.className = 'remove-btn';
                         removeBtn.innerHTML = '×';
-                        removeBtn.onclick = () => removeMedia(index);
+                        removeBtn.onclick = () => removePhoto(index);
                         
-                        const mediaNumber = document.createElement('div');
-                        mediaNumber.className = 'media-number';
-                        mediaNumber.textContent = index + 1;
+                        const photoNumber = document.createElement('div');
+                        photoNumber.className = 'photo-number';
+                        photoNumber.textContent = index + 1;
                         
-                        const mediaInfo = document.createElement('div');
-                        mediaInfo.className = 'media-info';
-                        mediaInfo.innerHTML = `
+                        const photoInfo = document.createElement('div');
+                        photoInfo.className = 'photo-info';
+                        photoInfo.innerHTML = `
                             <div class="fw-bold">${file.name}</div>
                             <div>${formatFileSize(file.size)}</div>
                         `;
                         
-                        thumbnail.appendChild(img);
                         thumbnail.appendChild(removeBtn);
-                        thumbnail.appendChild(mediaNumber);
-                        thumbnail.appendChild(mediaInfo);
+                        thumbnail.appendChild(photoNumber);
+                        thumbnail.appendChild(photoInfo);
                         col.appendChild(thumbnail);
                         thumbnailsContainer.appendChild(col);
-                    }
+                    };
+                    reader.readAsDataURL(file);
                 });
                 
-                fileInfo.textContent = `${files.length} media selected`;
+                fileInfo.textContent = `${files.length} media files selected`;
                 // Hide title field for multiple media
                 document.getElementById('titleField').style.display = 'none';
                 document.getElementById('title').required = false;
-                document.getElementById('uploadButton').innerHTML = `<i class="bi bi-cloud-upload"></i> Upload ${files.length} Media`;
+                document.getElementById('uploadButton').innerHTML = `<i class="bi bi-cloud-upload"></i> Upload ${files.length} Media Files`;
             }
         }
     }
     
-    function removeMedia(index) {
-        const fileInput = document.getElementById('photo');
+    function removePhoto(index) {
+        const fileInput = document.getElementById('media');
         const files = Array.from(fileInput.files);
         
         // Remove the file at the specified index
@@ -545,16 +550,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function getFileIcon(mimeType) {
-        // Return appropriate icon based on file type
-        if (mimeType.startsWith('image/')) {
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0Y4RjlGQSIvPgo8cGF0aCBkPSJNMzIgMTZIMTZWMzJIMzJWMTZaIiBzdHJva2U9IiM2Qzc1N0QiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0yMCAyMEwyOCAyOEwyMCAyMFoiIHN0cm9rZT0iIzZDNzU3RCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
-        } else if (mimeType.startsWith('video/')) {
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0Y4RjlGQSIvPgo8cGF0aCBkPSJNMzIgMTZIMTZWMzJIMzJWMTZaIiBzdHJva2U9IiM2Qzc1N0QiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0yNCAyMEwyNCAyOCIgc3Ryb2tlPSIjNkM3NTdEIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=';
-        } else if (mimeType.startsWith('audio/')) {
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0Y4RjlGQSIvPgo8cGF0aCBkPSJNMjQgMTJWMzYiIHN0cm9rZT0iIzZDNzU3RCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTE4IDI0SDMwIiBzdHJva2U9IiM2Qzc1N0QiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg==';
-        } else {
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iNCIgZmlsbD0iI0Y4RjlGQSIvPgo8cGF0aCBkPSJNMzIgMTZIMTZWMzJIMzJWMTZaIiBzdHJva2U9IiM2Qzc1N0QiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0yMCAyMEwyOCAyOEwyMCAyMFoiIHN0cm9rZT0iIzZDNzU3RCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
-        }
+        if (mimeType.startsWith('image/')) return 'bi-image';
+        if (mimeType.startsWith('video/')) return 'bi-play-circle';
+        if (mimeType.startsWith('audio/')) return 'bi-music-note';
+        if (mimeType.includes('pdf')) return 'bi-file-pdf';
+        if (mimeType.includes('word') || mimeType.includes('document')) return 'bi-file-word';
+        if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'bi-file-excel';
+        if (mimeType.includes('zip') || mimeType.includes('archive')) return 'bi-file-zip';
+        return 'bi-file';
     }
     
     // Album filtering
@@ -576,9 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     orgSelect.addEventListener('change', filterAlbums);
     filterAlbums(); // Initial filter
-    
 });
-
 
 // Visibility selection
 function selectVisibility(value) {

@@ -342,7 +342,7 @@
     display: block;
 }
 
-/* Adjust media card layout in list view to accommodate checkbox */
+/* Adjust photo card layout in list view to accommodate checkbox */
 .media-grid.list-view .media-card {
     padding-left: 0.5rem;
 }
@@ -761,20 +761,20 @@
 }
 
 /* Upload modal should be scrollable - only modal content, not page */
-#uploadPhotoModal .modal-dialog {
+#uploadMediaModal .modal-dialog {
     max-height: 90vh;
     margin: 1.75rem auto;
     overflow: hidden;
 }
 
-#uploadPhotoModal .modal-content {
+#uploadMediaModal .modal-content {
     max-height: 90vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-#uploadPhotoModal .modal-body {
+#uploadMediaModal .modal-body {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
@@ -792,7 +792,7 @@ body.modal-open {
 }
 
 /* Ensure only modal content scrolls */
-#uploadPhotoModal .modal-body {
+#uploadMediaModal .modal-body {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
 }
@@ -925,7 +925,7 @@ body.modal-open {
     height: auto !important;
 }
 
-#previewArea .photo-thumbnail:hover {
+#previewArea .media-thumbnail:hover {
     transform: scale(1.02) !important;
 }
 
@@ -936,7 +936,7 @@ body.modal-open {
     border-radius: 0 !important;
 }
 
-#previewArea .photo-thumbnail .media-info {
+#previewArea .media-thumbnail .media-info {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -947,7 +947,7 @@ body.modal-open {
     font-size: 0.75rem;
 }
 
-#previewArea .photo-thumbnail .photo-number {
+#previewArea .media-thumbnail .media-number {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -963,7 +963,7 @@ body.modal-open {
     font-weight: bold;
 }
 
-#previewArea .photo-thumbnail .remove-btn {
+#previewArea .media-thumbnail .remove-btn {
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
@@ -981,11 +981,11 @@ body.modal-open {
     transition: background 0.2s ease;
 }
 
-#previewArea .photo-thumbnail .remove-btn:hover {
+#previewArea .media-thumbnail .remove-btn:hover {
     background: rgba(220, 53, 69, 1);
 }
 
-/* Single photo preview styling - override global photo-thumbnail styles */
+/* Single photo preview styling - override global media-thumbnail styles */
 #previewArea #singlePreview img {
     width: 100% !important;
     height: auto !important;
@@ -997,6 +997,60 @@ body.modal-open {
     box-shadow: none !important;
     transition: none !important;
 }
+
+/* Media type specific styles */
+.media-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.media-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.audio-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.audio-preview i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.audio-preview audio {
+    width: 100%;
+    max-width: 200px;
+}
+
+.file-preview {
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.file-preview i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.file-extension {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #495057;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
 </style>
 
 <div class="container">
@@ -1007,7 +1061,7 @@ body.modal-open {
         </h1>
         <p class="page-subtitle">Manage and organize your media collection</p>
         <div class="mt-3">
-            <button class="btn btn-primary" id="uploadPhotoBtn">
+            <button class="btn btn-primary" id="uploadMediaBtn" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
                 <i class="bi bi-cloud-upload me-1"></i>Upload Media
             </button>
         </div>
@@ -1037,7 +1091,7 @@ body.modal-open {
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
                                     <div class="bg-info bg-opacity-10 rounded-circle p-2">
-                                        <i class="bi bi-collection text-primary"></i>
+                                        <i class="bi bi-camera text-primary"></i>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
@@ -1135,7 +1189,7 @@ body.modal-open {
         </div>
     </div>
 
-    @if($photos->count() > 0)
+    @if($media->count() > 0)
         <!-- Bulk Actions Bar (hidden by default) -->
         <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
             <div class="bulk-actions-content">
@@ -1157,63 +1211,85 @@ body.modal-open {
         </div>
 
         <div class="media-grid" id="mediaGrid">
-            @foreach($photos as $photo)
-                <div class="media-card" data-visibility="{{ $photo->visibility }}" data-organization="{{ $photo->organization_id }}" data-filename="{{ $photo->filename }}">
+            @foreach($media as $mediaItem)
+                <div class="media-card" data-visibility="{{ $mediaItem->visibility }}" data-organization="{{ $mediaItem->organization_id }}" data-filename="{{ $mediaItem->filename }}">
                     <!-- Bulk selection checkbox (only visible in list view) -->
                     <div class="bulk-checkbox-container">
-                        <input type="checkbox" class="media-checkbox" id="media-{{ $photo->filename }}" value="{{ $photo->filename }}">
-                        <label for="media-{{ $photo->filename }}" class="bulk-checkbox-label"></label>
+                        <input type="checkbox" class="media-checkbox" id="media-{{ $mediaItem->filename }}" value="{{ $mediaItem->filename }}">
+                        <label for="media-{{ $mediaItem->filename }}" class="bulk-checkbox-label"></label>
                     </div>
                     
                     <div class="media-thumbnail">
-                        <img src="{{ $photo->url }}" alt="{{ $photo->title }}">
+                        @if($mediaItem->media_type === 'image')
+                            <img src="{{ $mediaItem->url }}" alt="{{ $mediaItem->title }}">
+                        @elseif($mediaItem->media_type === 'video')
+                            <video class="media-preview" controls>
+                                <source src="{{ $mediaItem->url }}" type="{{ $mediaItem->mime }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        @elseif($mediaItem->media_type === 'audio')
+                            <div class="media-preview audio-preview">
+                                <i class="bi {{ $mediaItem->icon }}"></i>
+                                <audio controls>
+                                    <source src="{{ $mediaItem->url }}" type="{{ $mediaItem->mime }}">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                            </div>
+                        @else
+                            <div class="media-preview file-preview">
+                                <i class="bi {{ $mediaItem->icon }}"></i>
+                                <span class="file-extension">{{ strtoupper($mediaItem->file_extension) }}</span>
+                            </div>
+                        @endif
                         <div class="media-thumbnail-actions">
-                            <a href="{{ $photo->url }}" target="_blank" class="btn btn-light btn-sm">
+                            <a href="{{ $mediaItem->url }}" target="_blank" class="btn btn-light btn-sm">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <button class="btn btn-primary btn-sm" onclick="openEditModal('{{ $photo->filename }}')">
+                            <button class="btn btn-primary btn-sm" onclick="openEditModal('{{ $mediaItem->filename }}')">
                                 <i class="bi bi-gear"></i>
                             </button>
                         </div>
                     </div>
                     <div class="media-info">
-                        <h5 class="media-title">{{ $photo->title }}</h5>
-                        <p class="media-description">{{ $photo->description ?? 'No description provided' }}</p>
+                        <h5 class="media-title">
+                            {{ $mediaItem->title }}
+                        </h5>
+                        <p class="media-description">{{ $mediaItem->description ?? 'No description provided' }}</p>
                         <div class="media-meta">
                             <span class="media-date">
-                                <i class="bi bi-calendar me-1"></i>{{ $photo->created_at->format('M d, Y') }}
+                                <i class="bi bi-calendar me-1"></i>{{ $mediaItem->created_at->format('M d, Y') }}
                             </span>
-                            <span class="media-visibility {{ $photo->visibility }}">
-                                <i class="bi bi-{{ $photo->visibility === 'private' ? 'lock' : 'globe' }} me-1"></i>
-                                {{ ucfirst($photo->visibility) }}
+                            <span class="media-visibility {{ $mediaItem->visibility }}">
+                                <i class="bi bi-{{ $mediaItem->visibility === 'private' ? 'lock' : 'globe' }} me-1"></i>
+                                {{ ucfirst($mediaItem->visibility) }}
                             </span>
                         </div>
                         <div class="media-stats">
                             <div class="media-meta-left">
-                                @if($photo->organization)
+                                @if($mediaItem->organization)
                             <div class="media-org">
-                                <i class="bi bi-people"></i>{{ $photo->organization->name }}
+                                <i class="bi bi-people"></i>{{ $mediaItem->organization->name }}
                             </div>
                                 @endif
-                            @if($photo->albums->count() > 0)
+                            @if($mediaItem->albums->count() > 0)
                                 <small class="text-muted">
-                                    <i class="bi bi-folder me-1"></i>{{ $photo->albums->pluck('name')->join(', ') }}
+                                    <i class="bi bi-folder me-1"></i>{{ $mediaItem->albums->pluck('name')->join(', ') }}
                                 </small>
                             @endif
                             </div>
                             <div class="media-actions-right">
-                                <a href="{{ $photo->url }}" target="_blank" class="btn btn-outline-info btn-sm btn-view" title="View Media">
+                                <a href="{{ $mediaItem->url }}" target="_blank" class="btn btn-outline-info btn-sm btn-view" title="View Media">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <button class="btn btn-outline-primary btn-sm btn-manage" title="Manage Media" onclick="openEditModal('{{ $photo->filename }}')">
+                                <button class="btn btn-outline-primary btn-sm btn-manage" title="Manage Media" onclick="openEditModal('{{ $mediaItem->filename }}')">
                                     <i class="bi bi-gear"></i>
                                 </button>
-                                @if($photo->share_token)
-                                    <button class="btn btn-outline-secondary btn-sm" title="Copy Media Link" onclick="copyShareLink('{{ $photo->url }}')">
+                                @if($mediaItem->share_token)
+                                    <button class="btn btn-outline-secondary btn-sm" title="Copy Media Link" onclick="copyShareLink('{{ $mediaItem->url }}')">
                                         <i class="bi bi-share"></i>
                                     </button>
                                 @endif
-                                <a href="{{ route('media.download', $photo->filename) }}" class="btn btn-outline-success btn-sm" title="Download">
+                                <a href="{{ route('media.download', $mediaItem->filename) }}" class="btn btn-outline-success btn-sm" title="Download">
                                     <i class="bi bi-download"></i>
                                 </a>
                             </div>
@@ -1223,7 +1299,7 @@ body.modal-open {
             @endforeach
         </div>
 
-        <!-- Edit Photo Modal -->
+        <!-- Edit Media Modal -->
         <div class="modal fade" id="editMediaModal" tabindex="-1" aria-labelledby="editMediaModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
@@ -1235,7 +1311,7 @@ body.modal-open {
                     </div>
                     <div class="modal-body py-3">
                         <!-- Tab Navigation -->
-                        <ul class="nav nav-tabs nav-tabs-sm mb-3" id="photoTabs" role="tablist">
+                        <ul class="nav nav-tabs nav-tabs-sm mb-3" id="mediaTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit-pane" type="button" role="tab">
                                     <i class="bi bi-pencil me-1"></i>Edit
@@ -1249,19 +1325,19 @@ body.modal-open {
                         </ul>
 
                         <!-- Tab Content -->
-                        <div class="tab-content" id="photoTabContent">
+                        <div class="tab-content" id="mediaTabContent">
                             <!-- Edit Tab -->
                             <div class="tab-pane fade show active" id="edit-pane" role="tabpanel">
-                                <form id="editPhotoForm" method="POST">
+                                <form id="editMediaForm" method="POST">
                                     @csrf
                                     @method('PUT')
 
                                     <div class="row">
-                                        <!-- Left Column: Photo Preview -->
+                                        <!-- Left Column: Media Preview -->
                                         <div class="col-md-4">
                                             <div class="text-center">
-                                                <img id="modalPhotoPreview" src="" alt="" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;">
-                                                <small class="text-muted">Photo Preview</small>
+                                                <img id="modalMediaPreview" src="" alt="" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;">
+                                                <small class="text-muted">Media Preview</small>
                                             </div>
                                         </div>
 
@@ -1275,7 +1351,7 @@ body.modal-open {
                                                 </div>
                                                 <div class="col-12 mb-2">
                                                     <label for="modalDescription" class="form-label small">Description (Optional)</label>
-                                                    <textarea class="form-control form-control-sm" id="modalDescription" name="description" rows="2" placeholder="Describe your photo..."></textarea>
+                                                    <textarea class="form-control form-control-sm" id="modalDescription" name="description" rows="2" placeholder="Describe your media..."></textarea>
                                                 </div>
                                             </div>
 
@@ -1316,11 +1392,11 @@ body.modal-open {
                             <!-- Details Tab -->
                             <div class="tab-pane fade" id="details-pane" role="tabpanel">
                                 <div class="row">
-                                    <!-- Left Column: Photo Preview -->
+                                    <!-- Left Column: Media Preview -->
                                     <div class="col-md-4">
                                         <div class="text-center">
-                                            <img id="modalPhotoPreviewDetails" src="" alt="" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;">
-                                            <small class="text-muted">Photo Preview</small>
+                                            <img id="modalMediaPreviewDetails" src="" alt="" class="img-fluid rounded mb-2" style="max-height: 150px; width: 100%; object-fit: cover;">
+                                            <small class="text-muted">Media Preview</small>
                                         </div>
                                     </div>
 
@@ -1379,7 +1455,7 @@ body.modal-open {
                 <i class="bi bi-search"></i>
             </div>
             <h4>No Media Found</h4>
-            <p>No media match your current filter criteria. Try adjusting your filters or use the Reset button above to see all media.</p>
+            <p>No photos match your current filter criteria. Try adjusting your filters or use the Reset button above to see all photos.</p>
         </div>
 
         <!-- Bulk Delete Confirmation Modal -->
@@ -1401,7 +1477,7 @@ body.modal-open {
                         </div>
                         
                         <div class="mb-3">
-                            <p class="mb-2">You are about to delete <strong id="bulkDeleteCount">0</strong> media item<span id="bulkDeletePlural">s</span>:</p>
+                            <p class="mb-2">You are about to delete <strong id="bulkDeleteCount">0</strong> media<span id="bulkDeletePlural"></span>:</p>
                             <div class="selected-media-list" id="selectedMediaList" style="max-height: 200px; overflow-y: auto;">
                                 <!-- Selected media will be listed here -->
                             </div>
@@ -1425,7 +1501,7 @@ body.modal-open {
 
         <!-- Pagination -->
         <div class="d-flex justify-content-center">
-            {{ $photos->appends(request()->query())->links() }}
+            {{ $media->appends(request()->query())->links() }}
         </div>
     @else
         <div class="empty-state">
@@ -1434,18 +1510,18 @@ body.modal-open {
             </div>
             <h4>No Media Yet</h4>
             <p>Start building your media collection by uploading your first media</p>
-            <button class="upload-btn" id="uploadFirstPhotoBtn">
+            <button class="upload-btn" id="uploadFirstMediaBtn" data-bs-toggle="modal" data-bs-target="#uploadMediaModal">
                 <i class="bi bi-cloud-upload me-2"></i>Upload Your First Media
             </button>
         </div>
     @endif
 
     <!-- Upload Photo Modal (Available on all pages) -->
-        <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+        <div class="modal fade" id="uploadMediaModal" tabindex="-1" aria-labelledby="uploadMediaModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header py-2">
-                        <h6 class="modal-title" id="uploadPhotoModalLabel">
+                        <h6 class="modal-title" id="uploadMediaModalLabel">
                             <i class="bi bi-cloud-upload me-2"></i>Upload Media
                         </h6>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1478,25 +1554,28 @@ body.modal-open {
                                 <!-- Preview Area -->
                                 <div id="previewArea" class="mt-3 d-none">
                                     <div id="previewContainer">
-                                        <!-- Single photo preview -->
+                                        <!-- Single media preview -->
                                         <div id="singlePreview" class="d-none">
                                             <img id="previewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
                                         </div>
                                         
-                                        <!-- Multiple photos preview -->
+                                        <!-- Multiple media preview -->
                                         <div id="multiplePreview" class="d-none">
                                             <div class="row" id="thumbnailsContainer">
                                                 <!-- Thumbnails will be inserted here -->
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mt-2">
+                                    <div class="mt-2 d-flex justify-content-between align-items-center">
                                         <small class="text-muted" id="fileInfo"></small>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" id="clearAllBtn" onclick="clearAllFiles()" style="display: none;">
+                                            <i class="bi bi-trash me-1"></i>Clear All
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Photo Information -->
+                            <!-- Media Information -->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-2">
@@ -1607,18 +1686,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const listViewBtn = document.getElementById('listViewBtn');
     const bulkActionsBar = document.getElementById('bulkActionsBar');
     const selectedCount = document.getElementById('selectedCount');
-    if (!selectedCount) {
-        console.error('selectedCount element not found');
-        return;
-    }
     const selectAllBtn = document.getElementById('selectAllBtn');
     const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
     const clearSelectionBtn = document.getElementById('clearSelectionBtn');
-    
-    if (!bulkActionsBar || !selectAllBtn || !bulkDeleteBtn || !clearSelectionBtn) {
-        console.error('One or more bulk action elements not found');
-        return;
-    }
     const mediaCheckboxes = document.querySelectorAll('.media-checkbox');
     
     // Initialize collapsible usage status
@@ -1726,11 +1796,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const filenames = Array.from(checkedBoxes).map(cb => cb.value);
         
         if (filenames.length === 0) {
-            showToast('No media selected for deletion.', 'warning');
+            showToast('No photos selected for deletion.', 'warning');
             return;
         }
         
-        // Populate modal with selected media
+        // Populate modal with selected photos
         populateBulkDeleteModal(filenames);
         
         // Show modal using fallback method
@@ -1865,7 +1935,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let errorCount = 0;
         
         const deletePromises = filenames.map(filename => {
-            return fetch(`/photos/${filename}`, {
+            return fetch(`/media/${filename}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1919,17 +1989,17 @@ document.addEventListener('DOMContentLoaded', function() {
             clearSelection();
             
             if (errorCount === 0) {
-                showToast(`Successfully deleted ${deletedCount} media!`, 'success');
+                showToast(`Successfully deleted ${deletedCount} media${deletedCount > 1 ? '' : ''}!`, 'success');
                 setTimeout(() => {
                     location.reload();
                 }, 1000);
             } else if (deletedCount > 0) {
-                showToast(`Deleted ${deletedCount} media, but ${errorCount} failed. Please refresh the page.`, 'warning');
+                showToast(`Deleted ${deletedCount} media${deletedCount > 1 ? '' : ''}, but ${errorCount} failed. Please refresh the page.`, 'warning');
                 setTimeout(() => {
                     location.reload();
                 }, 2000);
             } else {
-                showToast('Failed to delete media. Please try again.', 'error');
+                showToast('Failed to delete photos. Please try again.', 'error');
             }
         });
     }
@@ -1967,7 +2037,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleCount = 0;
         let visibleCards = [];
 
-        // First, filter the media
+        // First, filter the photos
         mediaCards.forEach(card => {
             const cardVisibility = card.dataset.visibility;
             const cardOrganization = card.dataset.organization;
@@ -2002,15 +2072,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Sort the visible cards
         if (visibleCards.length > 0) {
             visibleCards.sort((a, b) => {
-                const titleElementA = a.querySelector('.media-title');
-                const titleElementB = b.querySelector('.media-title');
-                const dateElementA = a.querySelector('.media-date');
-                const dateElementB = b.querySelector('.media-date');
-                
-                const titleA = titleElementA ? titleElementA.textContent.toLowerCase() : '';
-                const titleB = titleElementB ? titleElementB.textContent.toLowerCase() : '';
-                const dateA = dateElementA ? new Date(dateElementA.textContent) : new Date();
-                const dateB = dateElementB ? new Date(dateElementB.textContent) : new Date();
+                const titleA = a.querySelector('.media-title').textContent.toLowerCase();
+                const titleB = b.querySelector('.media-title').textContent.toLowerCase();
+                const dateA = new Date(a.querySelector('.media-date').textContent);
+                const dateB = new Date(b.querySelector('.media-date').textContent);
 
                 switch (sortValue) {
                     case 'oldest':
@@ -2061,15 +2126,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetBtn = document.getElementById('resetFiltersBtn');
     if (resetBtn) resetBtn.addEventListener('click', clearFilters);
     
-    // Initialize the reset button state on page load (only if we have media)
+    // Initialize the reset button state on page load (only if we have photos)
     if (mediaCards.length > 0) {
     filterMedia();
     }
     
     // Initialize upload modal functionality for all upload buttons
-    const uploadModal = document.getElementById('uploadPhotoModal');
-    const uploadFirstPhotoBtn = document.getElementById('uploadFirstPhotoBtn');
-    const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+    const uploadModal = document.getElementById('uploadMediaModal');
+    const uploadFirstMediaBtn = document.getElementById('uploadFirstMediaBtn');
+    const uploadPhotoBtn = document.getElementById('uploadMediaBtn');
     
     // Function to open upload modal
     function openUploadModal() {
@@ -2143,9 +2208,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Add event listeners to all upload buttons
-    if (uploadFirstPhotoBtn) {
+    if (uploadFirstMediaBtn) {
         console.log('Empty state upload button found');
-        uploadFirstPhotoBtn.addEventListener('click', function(e) {
+        uploadFirstMediaBtn.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Empty state upload button clicked');
             openUploadModal();
@@ -2157,7 +2222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check if user has reached photo or storage limits
         @if($userLimits)
-            @if(!$userLimits->canUploadPhotos() || !$userLimits->hasAnyStorageSpace())
+            @if(!$userLimits->canUploadMedia() || !$userLimits->hasAnyStorageSpace())
                 uploadPhotoBtn.disabled = true;
                 uploadPhotoBtn.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Limit Reached';
                 uploadPhotoBtn.classList.remove('btn-primary');
@@ -2173,16 +2238,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    if (!uploadFirstPhotoBtn && !uploadPhotoBtn) {
+    if (!uploadFirstMediaBtn && !uploadPhotoBtn) {
         console.log('No upload buttons found');
     }
 }
 
 // Modal functionality
-let currentPhotoFilename = '';
+let currentMediaFilename = '';
 
 function openEditModal(filename) {
-    currentPhotoFilename = filename;
+    currentMediaFilename = filename;
     
     // Show loading state using fallback method
     const modalElement = document.getElementById('editMediaModal');
@@ -2255,7 +2320,7 @@ function openEditModal(filename) {
     }
     
     // Fetch photo data
-    fetch(`/photos/${filename}/edit-data`)
+    fetch(`/media/${filename}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -2272,8 +2337,8 @@ function openEditModal(filename) {
             console.log('Photo visibility:', data.photo.visibility);
             
             // Populate form fields
-            const imgElement = document.getElementById('modalPhotoPreview');
-            const imgElementDetails = document.getElementById('modalPhotoPreviewDetails');
+            const imgElement = document.getElementById('modalMediaPreview');
+            const imgElementDetails = document.getElementById('modalMediaPreviewDetails');
             
             imgElement.src = data.photo.url;
             imgElement.alt = data.photo.title;
@@ -2316,7 +2381,7 @@ function openEditModal(filename) {
             selectModalVisibility(data.photo.visibility);
             
             // Set form action
-            document.getElementById('editPhotoForm').action = `/photos/${filename}`;
+            document.getElementById('editMediaForm').action = `/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
@@ -2364,67 +2429,46 @@ function selectModalVisibility(value) {
 function populateDetailsTab(photo) {
     // Albums
     const albumNames = photo.albums ? photo.albums.map(album => album.name).join(', ') : 'No albums';
-    const detailAlbum = document.getElementById('detailAlbum');
-    if (detailAlbum) {
-        detailAlbum.textContent = albumNames;
-    }
+    document.getElementById('detailAlbum').textContent = albumNames;
     
     // Organization
-    const detailOrganization = document.getElementById('detailOrganization');
-    if (detailOrganization) {
-        detailOrganization.textContent = photo.organization ? photo.organization.name : 'None';
-    }
+    document.getElementById('detailOrganization').textContent = photo.organization ? photo.organization.name : 'None';
     
     // Uploaded by
-    const detailUploader = document.getElementById('detailUploader');
-    if (detailUploader) {
-        detailUploader.textContent = photo.user ? photo.user.name : '-';
-    }
+    document.getElementById('detailUploader').textContent = photo.user ? photo.user.name : '-';
     
     // Uploaded date
-    const detailUploaded = document.getElementById('detailUploaded');
-    if (detailUploaded) {
-        if (photo.created_at) {
-            const date = new Date(photo.created_at);
-            detailUploaded.textContent = date.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-        } else {
-            detailUploaded.textContent = '-';
-        }
+    if (photo.created_at) {
+        const date = new Date(photo.created_at);
+        document.getElementById('detailUploaded').textContent = date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    } else {
+        document.getElementById('detailUploaded').textContent = '-';
     }
     
     // File type
-    const detailFileType = document.getElementById('detailFileType');
-    if (detailFileType) {
-        detailFileType.textContent = photo.mime || '-';
-    }
+    document.getElementById('detailFileType').textContent = photo.mime || '-';
     
     // File size
-    const detailFileSize = document.getElementById('detailFileSize');
-    if (detailFileSize) {
-        detailFileSize.textContent = formatFileSize(photo.size_bytes || 0);
-    }
+    document.getElementById('detailFileSize').textContent = formatFileSize(photo.size_bytes || 0);
     
     // Visibility
-    const detailVisibility = document.getElementById('detailVisibility');
-    if (detailVisibility) {
-        const visibilityMap = {
-            'private': 'Private',
-            'org': 'Organization',
-            'public': 'Public'
-        };
-        detailVisibility.textContent = visibilityMap[photo.visibility] || '-';
-    }
+    const visibilityMap = {
+        'private': 'Private',
+        'org': 'Organization',
+        'public': 'Public'
+    };
+    document.getElementById('detailVisibility').textContent = visibilityMap[photo.visibility] || '-';
 }
 
 function submitEditForm() {
-    const form = document.getElementById('editPhotoForm');
+    const form = document.getElementById('editMediaForm');
     const formData = new FormData(form);
     
     fetch(form.action, {
@@ -2463,15 +2507,26 @@ function submitEditForm() {
     });
 }
 
+// Add form submit event listener to handle Enter key presses
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.getElementById('editMediaForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            submitEditForm(); // Call the same function as the Save button
+        });
+    }
+});
+
 function deletePhoto() {
-    if (!currentPhotoFilename) {
+    if (!currentMediaFilename) {
         showToast('No photo selected for deletion.', 'warning');
         return;
     }
     
     // Show confirmation dialog
     if (confirm('Are you sure you want to delete this photo? This action cannot be undone.')) {
-        fetch(`/photos/${currentPhotoFilename}`, {
+        fetch(`/media/${currentMediaFilename}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2667,6 +2722,53 @@ function showCopyError() {
     showToast('Failed to copy link. Please try again or copy manually.', 'error');
 }
 
+// Global variables for upload modal
+let selectedFiles = [];
+
+// Global function for clearing all files in upload modal
+function clearAllFiles() {
+    // Clear the file input
+    const uploadPhotoInput = document.getElementById('uploadMedia');
+    if (uploadPhotoInput) {
+        uploadPhotoInput.value = '';
+    }
+    
+    // Reset global selectedFiles array
+    if (typeof selectedFiles !== 'undefined') {
+        selectedFiles = [];
+    }
+    
+    // Hide preview area
+    const previewArea = document.getElementById('previewArea');
+    if (previewArea) {
+        previewArea.classList.add('d-none');
+    }
+    
+    // Reset form fields
+    const titleField = document.getElementById('uploadTitle');
+    const descriptionField = document.getElementById('uploadDescription');
+    if (titleField) {
+        const titleFieldContainer = titleField.closest('.mb-2');
+        if (titleFieldContainer) titleFieldContainer.style.display = 'none';
+    }
+    if (descriptionField) {
+        const descriptionFieldContainer = descriptionField.closest('.mb-2');
+        if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'none';
+    }
+    
+    // Reset upload button
+    const uploadBtn = document.querySelector('.modal-footer .btn-primary');
+    if (uploadBtn) {
+        uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+    }
+    
+    // Hide clear all button
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.style.display = 'none';
+    }
+}
+
 // Album selection in modal (no organization filtering)
 document.addEventListener('DOMContentLoaded', function() {
     const modalAlbumSelect = document.getElementById('modalAlbum');
@@ -2676,7 +2778,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Upload modal functionality
     const uploadArea = document.getElementById('uploadArea');
-    const uploadPhotoInput = document.getElementById('uploadPhoto');
+    const uploadPhotoInput = document.getElementById('uploadMedia');
     const previewArea = document.getElementById('previewArea');
     const previewImage = document.getElementById('previewImage');
     const fileInfo = document.getElementById('fileInfo');
@@ -2697,50 +2799,178 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                uploadPhotoInput.files = files;
-                handleFileSelect(files);
+        const newFiles = e.dataTransfer.files;
+        if (newFiles.length > 0) {
+            // Get the dropped files
+            const droppedFiles = Array.from(newFiles);
+            
+            // Filter out duplicates based on name and size
+            const uniqueFiles = droppedFiles.filter(newFile => 
+                !selectedFiles.some(existingFile => 
+                    existingFile.name === newFile.name && existingFile.size === newFile.size
+                )
+            );
+            
+            if (uniqueFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...uniqueFiles];
+                
+                // Create new FileList from our global array
+                const dt = new DataTransfer();
+                selectedFiles.forEach(file => dt.items.add(file));
+                uploadPhotoInput.files = dt.files;
+                
+                // Handle the combined files
+                handleFileSelect(selectedFiles);
+            }
             }
         });
         
         uploadPhotoInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
-                handleFileSelect(e.target.files);
+                // Get the new files from the event
+                const newFiles = Array.from(e.target.files);
+                
+                // Filter out duplicates based on name and size
+                const uniqueFiles = newFiles.filter(newFile => 
+                    !selectedFiles.some(existingFile => 
+                        existingFile.name === newFile.name && existingFile.size === newFile.size
+                    )
+                );
+                
+                if (uniqueFiles.length > 0) {
+                    selectedFiles = [...selectedFiles, ...uniqueFiles];
+                    
+                    // Create new FileList from our global array
+                    const dt = new DataTransfer();
+                    selectedFiles.forEach(file => dt.items.add(file));
+                    uploadPhotoInput.files = dt.files;
+                    
+                    // Handle the combined files
+                    handleFileSelect(selectedFiles);
+                }
             }
         });
+        
+        // selectedFiles is now global
+
+        function getFileIcon(mimeType) {
+            if (mimeType.startsWith('image/')) {
+                return 'bi-image';
+            } else if (mimeType.startsWith('video/')) {
+                return 'bi-play-circle';
+            } else if (mimeType.startsWith('audio/')) {
+                return 'bi-music-note';
+            } else if (mimeType.includes('pdf')) {
+                return 'bi-file-pdf';
+            } else if (mimeType.includes('word') || mimeType.includes('document')) {
+                return 'bi-file-word';
+            } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+                return 'bi-file-excel';
+            } else if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) {
+                return 'bi-file-ppt';
+            } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) {
+                return 'bi-file-zip';
+            } else if (mimeType.includes('text')) {
+                return 'bi-file-text';
+            } else {
+                return 'bi-file';
+            }
+        }
         
         function handleFileSelect(files) {
             if (files && files.length > 0) {
                 previewArea.classList.remove('d-none');
                 
                 if (files.length === 1) {
-                    // Single photo preview
+                    // Single media preview
                     const file = files[0];
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
                             previewImage.src = e.target.result;
+                            previewImage.style.display = 'block';
                             singlePreview.classList.remove('d-none');
                             multiplePreview.classList.add('d-none');
                             
+                            // Hide file icon container if it exists
+                            const iconContainer = document.getElementById('fileIconContainer');
+                            if (iconContainer) {
+                                iconContainer.style.display = 'none';
+                            }
+                            
                             fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
-                            // Update button text for single photo
+                            
+                            // Show title and description fields for single file
+                            const titleField = document.getElementById('uploadTitle').closest('.mb-2');
+                            const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                            if (titleField) titleField.style.display = 'block';
+                            if (descriptionField) descriptionField.style.display = 'block';
+                            
+                            // Update button text for single media
                             const uploadBtn = document.querySelector('.modal-footer .btn-primary');
-                            uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Photo';
+                            uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+                            
+                            // Show clear all button
+                            const clearAllBtn = document.getElementById('clearAllBtn');
+                            if (clearAllBtn) clearAllBtn.style.display = 'block';
                         };
                         reader.readAsDataURL(file);
+                    } else {
+                        // Non-image single file preview
+                        singlePreview.classList.remove('d-none');
+                        multiplePreview.classList.add('d-none');
+                        
+                        // Clear the image and show file icon instead
+                        previewImage.style.display = 'none';
+                        
+                        // Create file icon container
+                        let iconContainer = document.getElementById('fileIconContainer');
+                        if (!iconContainer) {
+                            iconContainer = document.createElement('div');
+                            iconContainer.id = 'fileIconContainer';
+                            iconContainer.className = 'file-icon-container';
+                            iconContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; background: #f8f9fa; border-radius: 8px; margin-bottom: 1rem;';
+                            singlePreview.insertBefore(iconContainer, previewImage);
+                        }
+                        
+                        iconContainer.innerHTML = `
+                            <i class="bi ${getFileIcon(file.type)}" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                            <div class="fw-bold">${file.name}</div>
+                            <div class="text-muted">${formatFileSize(file.size)}</div>
+                        `;
+                        
+                        fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                        
+                        // Show title and description fields for single file
+                        const titleField = document.getElementById('uploadTitle').closest('.mb-2');
+                        const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                        if (titleField) titleField.style.display = 'block';
+                        if (descriptionField) descriptionField.style.display = 'block';
+                        
+                        // Update button text for single media
+                        const uploadBtn = document.querySelector('.modal-footer .btn-primary');
+                        uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+                        
+                        // Show clear all button
+                        const clearAllBtn = document.getElementById('clearAllBtn');
+                        if (clearAllBtn) clearAllBtn.style.display = 'block';
                     }
                 } else {
-                    // Multiple photos preview
+                    // Multiple media preview
                     singlePreview.classList.add('d-none');
                     multiplePreview.classList.remove('d-none');
+                    
+                    // Hide title and description fields for multiple files
+                    const titleField = document.getElementById('uploadTitle').closest('.mb-2');
+                    const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                    if (titleField) titleField.style.display = 'none';
+                    if (descriptionField) descriptionField.style.display = 'none';
                     
                     // Clear existing thumbnails
                     const thumbnailsContainer = document.getElementById('thumbnailsContainer');
                     thumbnailsContainer.innerHTML = '';
                     
-                    // Create thumbnails for each photo
+                    // Create thumbnails for each media file
                     Array.from(files).forEach((file, index) => {
                         if (file.type.startsWith('image/')) {
                             const reader = new FileReader();
@@ -2749,7 +2979,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 col.className = 'col-md-3 col-sm-4 col-6';
                                 
                                 const thumbnail = document.createElement('div');
-                                thumbnail.className = 'photo-thumbnail';
+                                thumbnail.className = 'media-thumbnail';
                                 thumbnail.dataset.index = index;
                                 
                                 const img = document.createElement('img');
@@ -2757,16 +2987,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 img.alt = `Photo ${index + 1}`;
                                 
                                 const removeBtn = document.createElement('button');
+                                removeBtn.type = 'button';
                                 removeBtn.className = 'remove-btn';
                                 removeBtn.innerHTML = '×';
-                                removeBtn.onclick = () => removePhoto(index);
+                                removeBtn.onclick = () => removeMedia(index);
                                 
                                 const photoNumber = document.createElement('div');
-                                photoNumber.className = 'photo-number';
+                                photoNumber.className = 'media-number';
                                 photoNumber.textContent = index + 1;
                                 
                                 const photoInfo = document.createElement('div');
-                                photoInfo.className = 'photo-info';
+                                photoInfo.className = 'media-info';
                                 photoInfo.innerHTML = `
                                     <div class="fw-bold">${file.name}</div>
                                     <div>${formatFileSize(file.size)}</div>
@@ -2780,38 +3011,116 @@ document.addEventListener('DOMContentLoaded', function() {
                                 thumbnailsContainer.appendChild(col);
                             };
                             reader.readAsDataURL(file);
+                        } else {
+                            // Non-image file thumbnail
+                            const col = document.createElement('div');
+                            col.className = 'col-md-3 col-sm-4 col-6';
+                            
+                            const thumbnail = document.createElement('div');
+                            thumbnail.className = 'media-thumbnail';
+                            thumbnail.dataset.index = index;
+                            
+                            // Create file icon container instead of image
+                            const fileIconContainer = document.createElement('div');
+                            fileIconContainer.className = 'file-icon-container';
+                            fileIconContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 120px; background: #f8f9fa; border-radius: 8px;';
+                            
+                            fileIconContainer.innerHTML = `
+                                <i class="bi ${getFileIcon(file.type)}" style="font-size: 2rem; color: #6c757d; margin-bottom: 0.5rem;"></i>
+                                <div class="fw-bold small text-center" style="font-size: 0.7rem;">${file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name}</div>
+                            `;
+                            
+                            const removeBtn = document.createElement('button');
+                            removeBtn.type = 'button';
+                            removeBtn.className = 'remove-btn';
+                            removeBtn.innerHTML = '×';
+                            removeBtn.onclick = () => removeMedia(index);
+                            
+                            const photoNumber = document.createElement('div');
+                            photoNumber.className = 'media-number';
+                            photoNumber.textContent = index + 1;
+                            
+                            const photoInfo = document.createElement('div');
+                            photoInfo.className = 'media-info';
+                            photoInfo.innerHTML = `
+                                <div class="fw-bold">${file.name}</div>
+                                <div>${formatFileSize(file.size)}</div>
+                            `;
+                            
+                            thumbnail.appendChild(fileIconContainer);
+                            thumbnail.appendChild(removeBtn);
+                            thumbnail.appendChild(photoNumber);
+                            thumbnail.appendChild(photoInfo);
+                            col.appendChild(thumbnail);
+                            thumbnailsContainer.appendChild(col);
                         }
                     });
                     
-                    fileInfo.textContent = `${files.length} photos selected`;
-                    // Update button text for multiple photos
+                    fileInfo.textContent = `${files.length} media selected`;
+                    // Update button text for multiple media
                     const uploadBtn = document.querySelector('.modal-footer .btn-primary');
-                    uploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${files.length} Photos`;
+                    uploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${files.length} Media`;
+                    
+                    // Show clear all button
+                    const clearAllBtn = document.getElementById('clearAllBtn');
+                    if (clearAllBtn) clearAllBtn.style.display = 'block';
                 }
             }
         }
         
-        function removePhoto(index) {
-            const fileInput = document.getElementById('uploadPhoto');
-            const files = Array.from(fileInput.files);
+        function removeMedia(index) {
+            console.log('Removing file at index:', index, 'from files:', selectedFiles.length);
             
-            // Remove the file at the specified index
-            files.splice(index, 1);
+            // Validate index
+            if (index < 0 || index >= selectedFiles.length) {
+                console.error('Invalid index for file removal:', index);
+                return;
+            }
             
-            // Create a new FileList-like object
+            // Remove file from our global array
+            selectedFiles.splice(index, 1);
+            
+            // Update the file input
             const dt = new DataTransfer();
-            files.forEach(file => dt.items.add(file));
-            fileInput.files = dt.files;
+            selectedFiles.forEach(f => dt.items.add(f));
+            uploadPhotoInput.files = dt.files;
             
-            // Re-render the preview
-            handleFileSelect(fileInput.files);
+            console.log('Files after removal:', selectedFiles.length);
+            
+            if (selectedFiles.length === 0) {
+                // Hide preview area when no files are left
+                document.getElementById('previewArea').classList.add('d-none');
+                // Reset form fields
+                const titleField = document.getElementById('uploadTitle').closest('.mb-2');
+                const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                if (titleField) titleField.style.display = 'none';
+                if (descriptionField) descriptionField.style.display = 'none';
+                // Reset upload button
+                const uploadBtn = document.querySelector('.modal-footer .btn-primary');
+                uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
+                // Hide clear all button
+                const clearAllBtn = document.getElementById('clearAllBtn');
+                if (clearAllBtn) clearAllBtn.style.display = 'none';
+            } else {
+                // Clear any existing previews first
+                const singlePreview = document.getElementById('singlePreview');
+                const multiplePreview = document.getElementById('multiplePreview');
+                const iconContainer = document.getElementById('fileIconContainer');
+                if (iconContainer) iconContainer.style.display = 'none';
+                if (multiplePreview) {
+                    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+                    if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
+                }
+                
+                handleFileSelect(selectedFiles);
+            }
         }
         
     }
     
     
     // Prevent page scroll when upload modal is open
-    const uploadModal = document.getElementById('uploadPhotoModal');
+    const uploadModal = document.getElementById('uploadMediaModal');
     if (uploadModal) {
         let scrollPosition = 0;
         
@@ -2874,7 +3183,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function submitUploadForm() {
-    const form = document.getElementById('uploadPhotoForm');
+    const form = document.getElementById('uploadMediaForm');
     const formData = new FormData(form);
     
     fetch(form.action, {
@@ -2887,7 +3196,7 @@ function submitUploadForm() {
     .then(response => {
         if (response.ok) {
             // Close modal using fallback method
-            const modalElement = document.getElementById('uploadPhotoModal');
+            const modalElement = document.getElementById('uploadMediaModal');
             if (modalElement) {
                 modalElement.classList.remove('show');
                 modalElement.style.display = 'none';

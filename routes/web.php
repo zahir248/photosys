@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\InvitationController;
@@ -28,8 +28,8 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Public photo sharing
-Route::get('/share/{token}', [PhotoController::class, 'share'])->name('photos.share');
+// Public media sharing
+Route::get('/share/{token}', [MediaController::class, 'share'])->name('media.share');
 
 // Public invitation routes
 Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
@@ -45,17 +45,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
-    // Photos
-    Route::get('/photos', [PhotoController::class, 'index'])->name('photos.index');
-    Route::get('/photos/create', [PhotoController::class, 'create'])->name('photos.create');
-    Route::get('/photos/create/album/{albumName}', [PhotoController::class, 'createWithAlbum'])->name('photos.create.album');
-    Route::post('/photos', [PhotoController::class, 'store'])->name('photos.store');
-    Route::get('/photos/{filename}/edit-data', [PhotoController::class, 'editData'])->name('photos.edit-data');
-    Route::get('/photos/{filename}/edit', [PhotoController::class, 'edit'])->name('photos.edit');
-    Route::get('/photos/{filename}/download', [PhotoController::class, 'download'])->name('photos.download');
-    Route::get('/photos/{filename}', [PhotoController::class, 'show'])->name('photos.show');
-    Route::put('/photos/{filename}', [PhotoController::class, 'update'])->name('photos.update');
-    Route::delete('/photos/{filename}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+    // Media
+    Route::get('/media', [MediaController::class, 'index'])->name('media.index');
+    Route::get('/media/create', [MediaController::class, 'create'])->name('media.create');
+    Route::get('/media/create/album/{albumName}', [MediaController::class, 'createWithAlbum'])->name('media.create.album');
+    Route::post('/media', [MediaController::class, 'store'])->name('media.store');
+    Route::get('/media/{filename}/edit-data', [MediaController::class, 'editData'])->name('media.edit-data');
+    Route::get('/media/{filename}/edit', [MediaController::class, 'edit'])->name('media.edit');
+    Route::get('/media/{filename}/download', [MediaController::class, 'download'])->name('media.download');
+    Route::get('/media/{filename}', [MediaController::class, 'show'])->name('media.show');
+    Route::put('/media/{filename}', [MediaController::class, 'update'])->name('media.update');
+    Route::delete('/media/{filename}', [MediaController::class, 'destroy'])->name('media.destroy');
     
     // Albums
     Route::get('/albums', [AlbumController::class, 'index'])->name('albums.index');
@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/albums/{name}/edit', [AlbumController::class, 'edit'])->name('albums.edit');
     Route::put('/albums/{name}', [AlbumController::class, 'update'])->name('albums.update');
     Route::delete('/albums/{name}/cover', [AlbumController::class, 'removeCover'])->name('albums.remove-cover');
-    Route::delete('/albums/{name}/photos/{filename}', [AlbumController::class, 'removePhoto'])->name('albums.remove-photo');
+    Route::delete('/albums/{name}/media/{filename}', [AlbumController::class, 'removePhoto'])->name('albums.remove-photo');
     Route::delete('/albums/{name}', [AlbumController::class, 'destroy'])->name('albums.destroy');
     Route::get('/albums/{name}', [AlbumController::class, 'show'])->name('albums.show');
     

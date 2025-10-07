@@ -15,6 +15,8 @@ class Photo extends Model
         'description',
         'storage_path',
         'mime',
+        'media_type',
+        'file_extension',
         'size_bytes',
         'visibility',
         'share_token',
@@ -36,9 +38,10 @@ class Photo extends Model
      */
     public function albums()
     {
-        return $this->belongsToMany(Album::class)
+        return $this->belongsToMany(Album::class, 'album_media', 'media_id', 'album_id')
+                    ->withPivot('created_at', 'updated_at')
                     ->withTimestamps()
-                    ->orderBy('album_photo.created_at', 'desc');
+                    ->orderBy('album_media.created_at', 'desc');
     }
 
     /**
@@ -63,6 +66,27 @@ class Photo extends Model
     public function getUrlAttribute()
     {
         return asset('storage/' . $this->storage_path);
+    }
+
+    /**
+     * Get the media type icon.
+     */
+    public function getIconAttribute()
+    {
+        switch ($this->media_type) {
+            case 'image':
+                return 'bi-image';
+            case 'video':
+                return 'bi-play-circle';
+            case 'audio':
+                return 'bi-music-note';
+            case 'document':
+                return 'bi-file-text';
+            case 'archive':
+                return 'bi-file-zip';
+            default:
+                return 'bi-file';
+        }
     }
 
     /**

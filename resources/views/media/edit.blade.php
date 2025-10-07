@@ -33,7 +33,7 @@
         : [
             ['url' => route('dashboard'), 'label' => 'Dashboard'],
             ['url' => route('media.index'), 'label' => 'Media'],
-            ['url' => route('photos.show', $photo->filename), 'label' => $photo->title],
+            ['url' => route('media.show', $photo->filename), 'label' => $photo->title],
             ['label' => 'Edit ' . $photo->title]
           ])
 " />
