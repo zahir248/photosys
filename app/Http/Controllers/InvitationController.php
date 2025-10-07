@@ -79,6 +79,7 @@ class InvitationController extends Controller
         $invitation->update(['accepted_at' => now()]);
         
         return redirect()->route('organizations.show', $invitation->organization->name)
-            ->with('success', 'You have successfully joined ' . $invitation->organization->name . '!');
+            ->with('toast_message', 'You have successfully joined ' . $invitation->organization->name . '!')
+            ->with('toast_type', 'success');
     }
 }

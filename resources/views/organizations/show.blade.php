@@ -1894,6 +1894,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize filters
     filterAlbums();
     filterMembers();
+    
+    // Handle toast messages from session
+    @if(session('toast_message'))
+        showToast('{{ session('toast_message') }}', '{{ session('toast_type', 'success') }}');
+    @endif
 });
 </script>
 
