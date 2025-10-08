@@ -244,6 +244,9 @@
     padding: 1rem;
     margin-bottom: 2rem;
     border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .filter-group {
@@ -269,6 +272,22 @@
 }
 
 .filter-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.filter-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.filter-input:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     outline: none;
@@ -456,6 +475,14 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
+}
+
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
 }
 
 .member-card {
@@ -1579,7 +1606,11 @@ body.modal-open {
             <!-- Members Filters -->
             <div class="filters-bar mb-3">
                 <div class="filter-group">
-                    <h6 class="filter-label mb-0">Filter members:</h6>
+                    <h6 class="filter-label mb-0">Search:</h6>
+                    <input type="text" class="filter-input" id="memberSearchInput" placeholder="Search by member name...">
+                </div>
+                <div class="filter-group">
+                    <h6 class="filter-label mb-0">Sort by:</h6>
                     <select class="filter-select" id="memberSortFilter">
                         <option value="name">Name A-Z</option>
                         <option value="role">Role</option>
@@ -1592,10 +1623,9 @@ body.modal-open {
             </div>
 
             @if($organization->users->count() > 0)
-                <div class="row g-2" id="membersGrid">
+                <div class="members-grid" id="membersGrid">
                     @foreach($organization->users as $user)
-                        <div class="col-6">
-                            <div class="member-card" data-name="{{ strtolower($user->name) }}" data-role="{{ $user->id === $organization->owner_id ? 'owner' : 'member' }}" data-joined="{{ $user->pivot->created_at->timestamp }}">
+                        <div class="member-card" data-name="{{ strtolower($user->name) }}" data-role="{{ $user->id === $organization->owner_id ? 'owner' : 'member' }}" data-joined="{{ $user->pivot->created_at->timestamp }}">
                             <div class="member-avatar">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
@@ -1613,7 +1643,6 @@ body.modal-open {
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     @endforeach
                 </div>
 
@@ -1818,6 +1847,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Members filtering and sorting
+    const memberSearchInput = document.getElementById('memberSearchInput');
     const memberSortFilter = document.getElementById('memberSortFilter');
     const memberCards = document.querySelectorAll('.member-card');
     const membersGrid = document.getElementById('membersGrid');
@@ -1825,10 +1855,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetMemberFiltersBtn = document.getElementById('resetMemberFiltersBtn');
 
     function filterMembers() {
+        const searchValue = memberSearchInput.value.toLowerCase().trim();
         const sortValue = memberSortFilter.value;
-        let visibleCards = Array.from(memberCards);
+        let visibleCards = [];
 
-        // Sort the cards
+        // First, filter the members
+        memberCards.forEach(card => {
+            const cardName = card.dataset.name;
+            
+            let showCard = true;
+
+            // Search filter
+            if (searchValue) {
+                if (!cardName.includes(searchValue)) {
+                    showCard = false;
+                }
+            }
+
+            card.style.display = showCard ? 'block' : 'none';
+            if (showCard) {
+                visibleCards.push(card);
+            }
+        });
+
+        // Sort the visible cards
         visibleCards.sort((a, b) => {
             const nameA = a.dataset.name;
             const nameB = b.dataset.name;
@@ -1851,21 +1901,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Reorder the cards in the DOM by moving their parent col-6 divs
+        // Reorder the cards in the DOM
         visibleCards.forEach(card => {
-            const colDiv = card.parentElement;
-            membersGrid.appendChild(colDiv);
+            membersGrid.appendChild(card);
         });
 
         // Show/hide no results state
-        if (visibleCards.length === 0) {
+        const hasFilters = searchValue;
+        if (visibleCards.length === 0 && hasFilters) {
             noMembersResultsState.style.display = 'block';
         } else {
             noMembersResultsState.style.display = 'none';
         }
 
         // Enable/disable reset button
-        if (sortValue !== 'name') {
+        if (hasFilters || sortValue !== 'name') {
             resetMemberFiltersBtn.disabled = false;
         } else {
             resetMemberFiltersBtn.disabled = true;
@@ -1873,7 +1923,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearMemberFilters() {
-        memberSortFilter.value = 'name';
+        if (memberSearchInput) memberSearchInput.value = '';
+        if (memberSortFilter) memberSortFilter.value = 'name';
         filterMembers();
     }
 
@@ -1883,6 +1934,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (resetAlbumFiltersBtn) {
         resetAlbumFiltersBtn.addEventListener('click', clearAlbumFilters);
+    }
+    if (memberSearchInput) {
+        memberSearchInput.addEventListener('input', filterMembers);
     }
     if (memberSortFilter) {
         memberSortFilter.addEventListener('change', filterMembers);

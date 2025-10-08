@@ -615,6 +615,22 @@
     outline: none;
 }
 
+.filter-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.filter-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;
@@ -1154,18 +1170,13 @@ body.modal-open {
     <!-- Filters Bar -->
     <div class="filters-bar">
         <div class="filter-group">
+            <h6 class="filter-label mb-0">Search:</h6>
+            <input type="text" class="filter-input" id="searchInput" placeholder="Search by filename or title...">
             <h6 class="filter-label mb-0">Filter by:</h6>
             <select class="filter-select" id="visibilityFilter">
                 <option value="">All Visibility</option>
                 <option value="private">Private</option>
                 <option value="public">Public</option>
-            </select>
-            <select class="filter-select" id="organizationFilter">
-                <option value="">All Media</option>
-                <option value="personal">Personal</option>
-                @foreach(auth()->user()->organizations as $org)
-                    <option value="{{ $org->id }}">{{ $org->name }}</option>
-                @endforeach
             </select>
             <select class="filter-select" id="sortFilter">
                 <option value="newest">Newest First</option>
@@ -1677,8 +1688,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function initializeApp() {
     // Initialize all DOM elements
+    const searchInput = document.getElementById('searchInput');
     const visibilityFilter = document.getElementById('visibilityFilter');
-    const organizationFilter = document.getElementById('organizationFilter');
     const sortFilter = document.getElementById('sortFilter');
     const mediaCards = document.querySelectorAll('.media-card');
     const mediaGrid = document.getElementById('mediaGrid');
@@ -2024,13 +2035,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function filterMedia() {
         // Check if required elements exist
-        if (!visibilityFilter || !organizationFilter || !sortFilter) {
+        if (!searchInput || !visibilityFilter || !sortFilter) {
             console.log('Filter elements not found, skipping filterMedia');
             return;
         }
         
+        const searchValue = searchInput.value.toLowerCase().trim();
         const visibilityValue = visibilityFilter.value;
-        const organizationValue = organizationFilter.value;
         const sortValue = sortFilter.value;
         const noResultsState = document.getElementById('noResultsState');
         const resetBtn = document.getElementById('resetFiltersBtn');
@@ -2040,26 +2051,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // First, filter the photos
         mediaCards.forEach(card => {
             const cardVisibility = card.dataset.visibility;
-            const cardOrganization = card.dataset.organization;
+            const cardTitle = card.querySelector('.media-title').textContent.toLowerCase();
+            const cardFilename = card.dataset.filename ? card.dataset.filename.toLowerCase() : '';
 
             let showCard = true;
 
-            if (visibilityValue && cardVisibility !== visibilityValue) {
-                showCard = false;
+            // Search filter
+            if (searchValue) {
+                const matchesTitle = cardTitle.includes(searchValue);
+                const matchesFilename = cardFilename.includes(searchValue);
+                if (!matchesTitle && !matchesFilename) {
+                    showCard = false;
+                }
             }
 
-            if (organizationValue) {
-                // If filtering by organization, show only photos from that organization
-                // or personal photos (when organizationValue is 'personal')
-                if (organizationValue === 'personal') {
-                    if (cardOrganization && cardOrganization !== '') {
+            // Visibility filter
+            if (visibilityValue && cardVisibility !== visibilityValue) {
                 showCard = false;
-                    }
-                } else {
-                    if (cardOrganization !== organizationValue) {
-                showCard = false;
-                    }
-                }
             }
 
             card.style.display = showCard ? 'block' : 'none';
@@ -2096,7 +2104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Show no results state if no photos are visible and filters are applied
-        const hasFilters = visibilityValue || organizationValue;
+        const hasFilters = searchValue || visibilityValue;
         if (visibleCount === 0 && hasFilters) {
             noResultsState.style.display = 'block';
         } else {
@@ -2112,14 +2120,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearFilters() {
+        if (searchInput) searchInput.value = '';
         if (visibilityFilter) visibilityFilter.value = '';
-        if (organizationFilter) organizationFilter.value = '';
         if (sortFilter) sortFilter.value = 'newest';
         filterMedia();
     }
 
+    if (searchInput) searchInput.addEventListener('input', filterMedia);
     if (visibilityFilter) visibilityFilter.addEventListener('change', filterMedia);
-    if (organizationFilter) organizationFilter.addEventListener('change', filterMedia);
     if (sortFilter) sortFilter.addEventListener('change', filterMedia);
     
     // Add event listener for reset button

@@ -755,6 +755,98 @@
         min-width: 0;
     }
 }
+
+/* Filters Bar Styles */
+.filters-bar {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.view-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+}
+
+.filter-select {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.filter-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.filter-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.reset-filters-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.reset-filters-btn:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.reset-filters-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
 </style>
 
 <div class="container">
@@ -767,10 +859,28 @@
     </div>
 
     @if($photos->count() > 0)
-        <!-- View Toggle and Bulk Actions Bar -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Filters Bar -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <h6 class="filter-label mb-0">Search:</h6>
+                <input type="text" class="filter-input" id="searchInput" placeholder="Search by filename or title...">
+                <h6 class="filter-label mb-0">Filter by:</h6>
+                <select class="filter-select" id="visibilityFilter">
+                    <option value="">All Visibility</option>
+                    <option value="private">Private</option>
+                    <option value="public">Public</option>
+                </select>
+                <select class="filter-select" id="sortFilter">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Name A-Z</option>
+                </select>
+                <button class="reset-filters-btn" id="resetFiltersBtn">
+                    <i class="bi bi-arrow-clockwise"></i>Reset
+                </button>
+            </div>
             <div class="view-toggle-group">
-                <h6 class="filter-label mb-0 me-3">View:</h6>
+                <h6 class="filter-label mb-0">View:</h6>
                 <div class="view-toggle-buttons">
                     <button class="view-toggle-btn active" id="gridViewBtn" data-view="grid" title="Grid View">
                         <i class="bi bi-grid-3x3-gap"></i>
@@ -899,6 +1009,15 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        <!-- No Results State (hidden by default) -->
+        <div class="no-results-state" id="noResultsState" style="display: none;">
+            <div class="text-center py-5">
+                <i class="bi bi-search" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                <h4>No Media Found</h4>
+                <p>No media match your current filter criteria. Try adjusting your filters or use the Reset button above to see all media.</p>
+            </div>
         </div>
 
         <!-- Pagination -->
@@ -1417,6 +1536,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearSelectionBtn = document.getElementById('clearSelectionBtn');
     const photoCheckboxes = document.querySelectorAll('.photo-checkbox');
     
+    // Filter elements
+    const searchInput = document.getElementById('searchInput');
+    const visibilityFilter = document.getElementById('visibilityFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const photoCards = document.querySelectorAll('.photo-card');
+    
     // Load saved view preference
     const savedView = localStorage.getItem('orgUnorganizedView') || 'grid';
     setView(savedView);
@@ -1727,6 +1852,112 @@ document.addEventListener('DOMContentLoaded', function() {
     photoCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateBulkActions);
     });
+
+    // Filtering functionality
+    function filterMedia() {
+        // Check if required elements exist
+        if (!searchInput || !visibilityFilter || !sortFilter) {
+            console.log('Filter elements not found, skipping filterMedia');
+            return;
+        }
+        
+        const searchValue = searchInput.value.toLowerCase().trim();
+        const visibilityValue = visibilityFilter.value;
+        const sortValue = sortFilter.value;
+        const noResultsState = document.getElementById('noResultsState');
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        let visibleCount = 0;
+        let visibleCards = [];
+
+        // First, filter the photos
+        photoCards.forEach(card => {
+            const cardVisibility = card.dataset.visibility;
+            const cardTitle = card.querySelector('.photo-title').textContent.toLowerCase();
+            const cardFilename = card.dataset.filename ? card.dataset.filename.toLowerCase() : '';
+
+            let showCard = true;
+
+            // Search filter
+            if (searchValue) {
+                const matchesTitle = cardTitle.includes(searchValue);
+                const matchesFilename = cardFilename.includes(searchValue);
+                if (!matchesTitle && !matchesFilename) {
+                    showCard = false;
+                }
+            }
+
+            // Visibility filter
+            if (visibilityValue && cardVisibility !== visibilityValue) {
+                showCard = false;
+            }
+
+            card.style.display = showCard ? 'block' : 'none';
+            if (showCard) {
+                visibleCount++;
+                visibleCards.push(card);
+            }
+        });
+
+        // Sort the visible cards
+        if (visibleCards.length > 0) {
+            visibleCards.sort((a, b) => {
+                const titleA = a.querySelector('.photo-title').textContent.toLowerCase();
+                const titleB = b.querySelector('.photo-title').textContent.toLowerCase();
+                const dateA = new Date(a.querySelector('.photo-date').textContent);
+                const dateB = new Date(b.querySelector('.photo-date').textContent);
+
+                switch (sortValue) {
+                    case 'oldest':
+                        return dateA - dateB;
+                    case 'name':
+                        return titleA.localeCompare(titleB);
+                    case 'newest':
+                    default:
+                        return dateB - dateA;
+                }
+            });
+
+            // Reorder the cards in the DOM
+            visibleCards.forEach(card => {
+                photoGrid.appendChild(card);
+            });
+        }
+
+        // Show no results state if no photos are visible and filters are applied
+        const hasFilters = searchValue || visibilityValue;
+        if (visibleCount === 0 && hasFilters) {
+            noResultsState.style.display = 'block';
+        } else {
+            noResultsState.style.display = 'none';
+        }
+
+        // Enable/disable reset button based on whether filters are active
+        if (hasFilters || sortValue !== 'newest') {
+            resetBtn.disabled = false;
+        } else {
+            resetBtn.disabled = true;
+        }
+    }
+
+    function clearFilters() {
+        if (searchInput) searchInput.value = '';
+        if (visibilityFilter) visibilityFilter.value = '';
+        if (sortFilter) sortFilter.value = 'newest';
+        filterMedia();
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterMedia);
+    if (visibilityFilter) visibilityFilter.addEventListener('change', filterMedia);
+    if (sortFilter) sortFilter.addEventListener('change', filterMedia);
+    
+    // Add event listener for reset button
+    const resetBtn = document.getElementById('resetFiltersBtn');
+    if (resetBtn) resetBtn.addEventListener('click', clearFilters);
+    
+    // Initialize the reset button state on page load (only if we have photos)
+    if (photoCards.length > 0) {
+        filterMedia();
+    }
 });
 
 // Universal Toast Notification System

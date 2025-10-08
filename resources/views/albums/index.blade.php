@@ -69,6 +69,22 @@
     outline: none;
 }
 
+.filter-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.filter-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
 .reset-filters-btn {
     background: #dc3545;
     color: white;
@@ -606,6 +622,8 @@ body.modal-open {
     <!-- Filters Bar -->
     <div class="filters-bar">
         <div class="filter-group">
+            <h6 class="filter-label mb-0">Search:</h6>
+            <input type="text" class="filter-input" id="searchInput" placeholder="Search by album name...">
             <h6 class="filter-label mb-0">Sort by:</h6>
             <select class="filter-select" id="sortFilter">
                 <option value="newest">Newest First</option>
@@ -1079,6 +1097,7 @@ function closeCreateAlbumModal() {
 }
 
 function initializeApp() {
+    const searchInput = document.getElementById('searchInput');
     const sortFilter = document.getElementById('sortFilter');
     const albumCards = document.querySelectorAll('.album-card');
     
@@ -1100,22 +1119,36 @@ function initializeApp() {
 
     function filterAlbums() {
         // Check if required elements exist
-        if (!sortFilter) {
-            console.log('Sort filter not found, skipping filterAlbums');
+        if (!searchInput || !sortFilter) {
+            console.log('Filter elements not found, skipping filterAlbums');
             return;
         }
         
+        const searchValue = searchInput.value.toLowerCase().trim();
         const sortValue = sortFilter.value;
         const noResultsState = document.getElementById('noResultsState');
         const resetBtn = document.getElementById('resetFiltersBtn');
         let visibleCount = 0;
         let visibleCards = [];
 
-        // Collect all cards for sorting
+        // First, filter the albums
         albumCards.forEach(card => {
-            card.style.display = 'block';
+            const cardTitle = card.querySelector('.album-title').textContent.toLowerCase();
+            
+            let showCard = true;
+
+            // Search filter
+            if (searchValue) {
+                if (!cardTitle.includes(searchValue)) {
+                    showCard = false;
+                }
+            }
+
+            card.style.display = showCard ? 'block' : 'none';
+            if (showCard) {
                 visibleCount++;
                 visibleCards.push(card);
+            }
         });
 
         // Sort the visible cards
@@ -1148,15 +1181,16 @@ function initializeApp() {
             });
         }
 
-        // Show no results state if no albums are visible
-        if (visibleCount === 0) {
+        // Show no results state if no albums are visible and filters are applied
+        const hasFilters = searchValue;
+        if (visibleCount === 0 && hasFilters) {
             noResultsState.style.display = 'block';
         } else {
             noResultsState.style.display = 'none';
         }
 
-        // Enable/disable reset button based on whether sort is not default
-        if (sortValue !== 'newest') {
+        // Enable/disable reset button based on whether filters are active
+        if (hasFilters || sortValue !== 'newest') {
             resetBtn.disabled = false;
         } else {
             resetBtn.disabled = true;
@@ -1164,10 +1198,12 @@ function initializeApp() {
     }
 
     function clearFilters() {
+        if (searchInput) searchInput.value = '';
         if (sortFilter) sortFilter.value = 'newest';
         filterAlbums();
     }
 
+    if (searchInput) searchInput.addEventListener('input', filterAlbums);
     if (sortFilter) sortFilter.addEventListener('change', filterAlbums);
     
     // Add event listener for reset button

@@ -71,6 +71,22 @@
     outline: none;
 }
 
+.filter-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: white;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.filter-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
 .reset-filters-btn {
     background: #dc3545;
     color: white;
@@ -630,7 +646,9 @@
     <!-- Filters Bar -->
     <div class="filters-bar">
         <div class="filter-group">
-            <h6 class="filter-label mb-0">Filter by:</h6>
+            <h6 class="filter-label mb-0">Search:</h6>
+            <input type="text" class="filter-input" id="searchInput" placeholder="Search by organization name...">
+            <h6 class="filter-label mb-0">Sort by:</h6>
             <select class="filter-select" id="sortFilter">
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -1085,18 +1103,39 @@ function waitForBootstrap() {
 
 // Initialize the application
 function initializeApp() {
+    const searchInput = document.getElementById('searchInput');
     const sortFilter = document.getElementById('sortFilter');
     const organizationCards = document.querySelectorAll('.organization-card');
 
     function filterOrganizations() {
         // Only run filtering if we have filters and cards
-        if (!sortFilter || !organizationCards.length) {
+        if (!searchInput || !sortFilter || !organizationCards.length) {
             return;
         }
+        const searchValue = searchInput.value.toLowerCase().trim();
         const sortValue = sortFilter.value;
         const noResultsState = document.getElementById('noResultsState');
         const resetBtn = document.getElementById('resetFiltersBtn');
-        let visibleCards = Array.from(organizationCards);
+        let visibleCards = [];
+
+        // First, filter the organizations
+        organizationCards.forEach(card => {
+            const cardTitle = card.querySelector('.organization-title').textContent.toLowerCase();
+            
+            let showCard = true;
+
+            // Search filter
+            if (searchValue) {
+                if (!cardTitle.includes(searchValue)) {
+                    showCard = false;
+                }
+            }
+
+            card.style.display = showCard ? 'block' : 'none';
+            if (showCard) {
+                visibleCards.push(card);
+            }
+        });
 
         // Sort the visible cards
         if (visibleCards.length > 0) {
@@ -1128,16 +1167,30 @@ function initializeApp() {
             });
         }
 
+        // Show no results state if no organizations are visible and filters are applied
+        const hasFilters = searchValue;
+        if (visibleCards.length === 0 && hasFilters) {
+            noResultsState.style.display = 'block';
+        } else {
+            noResultsState.style.display = 'none';
+        }
+
         // Enable/disable reset button based on whether filters are active
-        resetBtn.disabled = sortValue === 'newest';
+        if (hasFilters || sortValue !== 'newest') {
+            resetBtn.disabled = false;
+        } else {
+            resetBtn.disabled = true;
+        }
     }
 
     function clearFilters() {
-        sortFilter.value = 'newest';
+        if (searchInput) searchInput.value = '';
+        if (sortFilter) sortFilter.value = 'newest';
         filterOrganizations();
     }
 
-    sortFilter.addEventListener('change', filterOrganizations);
+    if (searchInput) searchInput.addEventListener('input', filterOrganizations);
+    if (sortFilter) sortFilter.addEventListener('change', filterOrganizations);
     
     // Add event listener for reset button
     const resetBtn = document.getElementById('resetFiltersBtn');
