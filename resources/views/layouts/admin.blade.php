@@ -63,7 +63,7 @@
         
         .nav-link.active {
             color: white;
-            background-color: #e74c3c;
+            background-color: #007bff;
         }
         
         .nav-link i {
@@ -96,7 +96,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            background: linear-gradient(90deg, #007bff, #0056b3);
         }
         
         .content-area {
@@ -144,13 +144,13 @@
         }
         
         .btn-primary-admin {
-            background-color: #e74c3c;
-            border-color: #e74c3c;
+            background-color: #007bff;
+            border-color: #007bff;
         }
         
         .btn-primary-admin:hover {
-            background-color: #c0392b;
-            border-color: #c0392b;
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
         
         .navbar-left {
@@ -193,7 +193,7 @@
         .user-avatar {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -202,7 +202,7 @@
             font-weight: 700;
             font-size: 1.1rem;
             margin-right: 0.75rem;
-            box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
         }
         
         .user-details h6 {
@@ -218,20 +218,20 @@
         }
         
         .logout-btn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
             color: white;
             padding: 0.6rem;
             border-radius: 8px;
             transition: all 0.3s ease;
             margin-left: 0.75rem;
-            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
         }
         
         .logout-btn:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
+            background: linear-gradient(135deg, #0056b3, #004085);
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
         }
         
         /* Logout Modal Styles */
@@ -252,16 +252,16 @@
         }
         
         #logoutModal .btn-danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
             font-weight: 500;
             padding: 0.5rem 1.5rem;
         }
         
         #logoutModal .btn-danger:hover {
-            background: linear-gradient(135deg, #c0392b, #a93226);
+            background: linear-gradient(135deg, #0056b3, #004085);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
         }
         
         #logoutModal .btn-secondary {

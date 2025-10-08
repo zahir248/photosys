@@ -36,7 +36,7 @@
         }
         
         .login-header {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -67,12 +67,12 @@
         }
         
         .form-control:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
         
         .btn-login {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             border: none;
             border-radius: 10px;
             padding: 12px;
@@ -83,7 +83,7 @@
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
         }
         
         .alert {
@@ -93,8 +93,8 @@
         }
         
         .form-check-input:checked {
-            background-color: #dc3545;
-            border-color: #dc3545;
+            background-color: #007bff;
+            border-color: #007bff;
         }
         
         .shield-icon {
@@ -128,7 +128,7 @@
                 
                 <div class="mb-3">
                     <label for="email" class="form-label">
-                        <i class="bi bi-envelope me-1"></i>Email Address
+                        Email Address
                     </label>
                     <input type="email" 
                            class="form-control @error('email') is-invalid @enderror" 
@@ -141,7 +141,7 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">
-                        <i class="bi bi-lock me-1"></i>Password
+                        Password
                     </label>
                     <input type="password" 
                            class="form-control @error('password') is-invalid @enderror" 
