@@ -12,9 +12,25 @@ class SuperAdminLimitsController extends Controller
     /**
      * Display system limits dashboard
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('limits')->paginate(15);
+        $query = User::with('limits');
+
+        // Search by name
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Preserve search and filter parameters in pagination links
+        $users->appends($request->query());
+
         $systemSettings = SystemSetting::all()->keyBy('key');
         
         $stats = [

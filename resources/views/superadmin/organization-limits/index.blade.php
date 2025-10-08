@@ -17,6 +17,29 @@
     </div>
 </div>
 
+<!-- Search Form -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body">
+        <form method="GET" action="{{ route('superadmin.organization-limits.index') }}" class="row g-3">
+            <div class="col-md-8">
+                <label for="search" class="form-label">Search by Organization Name or Owner Name</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ request('search') }}" placeholder="Enter organization name or owner name...">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="btn-group w-100" role="group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    <a href="{{ route('superadmin.organization-limits.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Organizations Table -->
 <div class="admin-card">
     <div class="admin-card-body">

@@ -84,6 +84,38 @@
     </div>
 </div>
 
+<!-- Search and Filter Form -->
+<div class="admin-card mb-4">
+    <div class="admin-card-body">
+        <form method="GET" action="{{ route('superadmin.limits.index') }}" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Search by Name</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="{{ request('search') }}" placeholder="Enter user name...">
+            </div>
+            <div class="col-md-4">
+                <label for="role" class="form-label">Filter by Role</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="">All Roles</option>
+                    <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="superadmin" {{ request('role') === 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="btn-group w-100" role="group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    <a href="{{ route('superadmin.limits.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Users Table -->
 <div class="admin-card">
     <div class="admin-card-header">

@@ -12,11 +12,24 @@ class SuperAdminController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['organizations', 'photos', 'albums', 'limits'])
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(15);
+        $query = User::with(['organizations', 'photos', 'albums', 'limits']);
+
+        // Search by name
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Preserve search and filter parameters in pagination links
+        $users->appends($request->query());
 
         return view('superadmin.users.index', compact('users'));
     }

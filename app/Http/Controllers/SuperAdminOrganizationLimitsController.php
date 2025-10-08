@@ -11,11 +11,24 @@ class SuperAdminOrganizationLimitsController extends Controller
     /**
      * Display a listing of organizations with their limits.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $organizations = Organization::with(['limits', 'owner', 'users'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = Organization::with(['limits', 'owner', 'users']);
+
+        // Search by organization name or owner name
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('owner', function($ownerQuery) use ($request) {
+                      $ownerQuery->where('name', 'like', '%' . $request->search . '%');
+                  });
+            });
+        }
+
+        $organizations = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Preserve search parameters in pagination links
+        $organizations->appends($request->query());
 
         return view('superadmin.organization-limits.index', compact('organizations'));
     }
