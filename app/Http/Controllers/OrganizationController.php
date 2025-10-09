@@ -137,7 +137,7 @@ class OrganizationController extends Controller
             abort(403, 'You do not have permission to view this organization.');
         }
 
-        $organization->load(['users', 'albums.photos', 'photos', 'limits']);
+        $organization->load(['users', 'albums.photos', 'photos.tags', 'limits']);
         
         // Ensure organization has limits
         $organization->getLimits();
@@ -677,7 +677,7 @@ class OrganizationController extends Controller
         // Get unorganized photos with pagination
         $photos = $organization->photos()
             ->doesntHave('albums')
-            ->with(['user'])
+            ->with(['user', 'tags'])
             ->latest()
             ->paginate(12);
 

@@ -61,6 +61,15 @@ class Photo extends Model
     }
 
     /**
+     * Get the tags associated with this photo.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'photo_tag', 'photo_id', 'tag_id')
+                    ->withTimestamps();
+    }
+
+    /**
      * Get the URL for the photo.
      */
     public function getUrlAttribute()

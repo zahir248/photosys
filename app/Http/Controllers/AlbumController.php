@@ -172,7 +172,7 @@ class AlbumController extends Controller
         
         $album = $query->firstOrFail();
         $album->load(['organization', 'photos.user']);
-        $medias = $album->photos()->paginate(12);
+        $medias = $album->photos()->with('tags')->paginate(12);
 
         return view('albums.show', compact('album', 'medias'));
     }

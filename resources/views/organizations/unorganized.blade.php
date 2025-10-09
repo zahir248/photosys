@@ -634,6 +634,112 @@
     min-width: 100px;
 }
 
+/* Tags Input Styles */
+.tags-input-container {
+    position: relative;
+}
+
+.tags-input-wrapper {
+    position: relative;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0.375rem 0.75rem;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.tag-item {
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.tag-item:hover {
+    background: #dc3545;
+}
+
+.tag-item .remove-tag {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.tags-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    flex: 1;
+    min-width: 120px;
+}
+
+.tags-input:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.tags-list {
+    margin-top: 0.5rem;
+}
+
+.selected-tag {
+    display: inline-block;
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin: 0.125rem;
+}
+
+/* Photo Card Tags Styles */
+.photo-tags {
+    margin: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: white;
+    background-color: #6c757d;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Random color classes for tag badges */
+.random-color-0 { background-color: #007bff !important; }
+.random-color-1 { background-color: #28a745 !important; }
+.random-color-2 { background-color: #dc3545 !important; }
+.random-color-3 { background-color: #ffc107 !important; color: #212529 !important; }
+.random-color-4 { background-color: #17a2b8 !important; }
+.random-color-5 { background-color: #6f42c1 !important; }
+.random-color-6 { background-color: #fd7e14 !important; }
+.random-color-7 { background-color: #20c997 !important; }
+
 .detail-value {
     font-weight: 400;
     color: #495057;
@@ -863,7 +969,7 @@
         <div class="filters-bar">
             <div class="filter-group">
                 <h6 class="filter-label mb-0">Search:</h6>
-                <input type="text" class="filter-input" id="searchInput" placeholder="Search by filename or title...">
+                <input type="text" class="filter-input" id="searchInput" placeholder="Search by filename, title, or tags...">
                 <h6 class="filter-label mb-0">Filter by:</h6>
                 <select class="filter-select" id="visibilityFilter">
                     <option value="">All Visibility</option>
@@ -961,6 +1067,18 @@
                     <div class="photo-info">
                         <h5 class="photo-title">{{ $photo->title }}</h5>
                         <p class="photo-description">{{ $photo->description ?? 'No description provided' }}</p>
+                        
+                        <!-- Tags Display -->
+                        @if($photo->tags && $photo->tags->count() > 0)
+                            <div class="photo-tags">
+                                @foreach($photo->tags as $tag)
+                                    <span class="tag-badge random-color-{{ $loop->index % 8 }}">
+                                        {{ $tag->name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+                        
                         <div class="photo-meta">
                             <span class="photo-date">
                                 <i class="bi bi-calendar me-1"></i>{{ $photo->created_at->format('M d, Y') }}
@@ -1091,6 +1209,28 @@
                                              <textarea class="form-control form-control-sm" id="modalDescription" name="description" rows="2" placeholder="Describe your photo..."></textarea>
                                          </div>
                                      </div>
+
+                                     <!-- Tags -->
+                                     <div class="row">
+                                         <div class="col-12 mb-2">
+                                             <label for="modalTags" class="form-label small">Tags (Optional) <span class="text-muted">- Maximum 2 tags</span></label>
+                                             <div class="tags-input-container">
+                                                 <div class="tags-input-wrapper">
+                                                     <div id="modalTagsDisplay" class="tags-display"></div>
+                                                     <input type="text" 
+                                                            id="modalTags" 
+                                                            class="form-control form-control-sm tags-input" 
+                                                            placeholder="Type a tag and press Enter (max 2 tags)"
+                                                            maxlength="50">
+                                                 </div>
+                                                 <div id="modalTagsList" class="tags-list d-none">
+                                                     <small class="text-muted">Selected tags:</small>
+                                                     <div id="modalSelectedTags"></div>
+                                                 </div>
+                                             </div>
+                                             <small class="text-muted">Press Enter to add a tag. Click on a tag to remove it.</small>
+                                         </div>
+                                     </div>
                                      
                                      <!-- Hidden visibility field -->
                                      <input type="hidden" name="visibility" value="org">
@@ -1136,6 +1276,10 @@
                                     <div class="detail-item mb-2">
                                         <div class="detail-label small text-muted">Visibility</div>
                                         <div class="detail-value small" id="detailVisibility">-</div>
+                                    </div>
+                                    <div class="detail-item mb-2">
+                                        <div class="detail-label small text-muted">Tags</div>
+                                        <div class="detail-value small" id="detailTags">No tags</div>
                                     </div>
                                 </div>
                             </div>
@@ -1198,6 +1342,7 @@
 
 <script>
 let currentPhotoFilename = null;
+let selectedTags = [];
 
 function openEditModal(filename) {
     console.log('Opening edit modal for:', filename);
@@ -1303,6 +1448,15 @@ function openEditModal(filename) {
             document.getElementById('modalTitle').value = data.photo.title;
             document.getElementById('modalDescription').value = data.photo.description || '';
             
+            // Set tags
+            if (data.photo.tags && data.photo.tags.length > 0) {
+                selectedTags = data.photo.tags.map(tag => tag.name);
+                updateModalTagsDisplay();
+            } else {
+                selectedTags = [];
+                updateModalTagsDisplay();
+            }
+            
             // Populate details tab
             populateDetailsTab(data.photo);
             
@@ -1350,6 +1504,10 @@ function populateDetailsTab(photo) {
         'public': 'Public'
     };
     document.getElementById('detailVisibility').textContent = visibilityMap[photo.visibility] || '-';
+    
+    // Tags
+    const tagNames = photo.tags ? photo.tags.map(tag => tag.name).join(', ') : 'No tags';
+    document.getElementById('detailTags').textContent = tagNames;
 }
 
 function formatFileSize(bytes) {
@@ -1421,6 +1579,82 @@ function deletePhoto() {
     }
 }
 
+// Tags functionality
+function clearTags() {
+    selectedTags = [];
+    const tagsDisplay = document.getElementById('modalTagsDisplay');
+    const tagsList = document.getElementById('modalTagsList');
+    const selectedTagsDiv = document.getElementById('modalSelectedTags');
+    const tagsInput = document.getElementById('modalTags');
+    
+    if (tagsDisplay) tagsDisplay.innerHTML = '';
+    if (tagsList) tagsList.classList.add('d-none');
+    if (selectedTagsDiv) selectedTagsDiv.innerHTML = '';
+    if (tagsInput) tagsInput.value = '';
+}
+
+function addTag(tagName) {
+    if (!tagName || tagName.trim() === '') return;
+    
+    tagName = tagName.trim().toLowerCase();
+    
+    // Check if tag already exists
+    if (selectedTags.includes(tagName)) {
+        return;
+    }
+    
+    // Check maximum tags limit
+    if (selectedTags.length >= 2) {
+        showToast('Maximum 2 tags allowed per media.', 'warning');
+        return;
+    }
+    
+    selectedTags.push(tagName);
+    updateModalTagsDisplay();
+}
+
+function removeTag(tagName) {
+    const index = selectedTags.indexOf(tagName);
+    if (index > -1) {
+        selectedTags.splice(index, 1);
+        updateModalTagsDisplay();
+    }
+}
+
+function updateModalTagsDisplay() {
+    const tagsDisplay = document.getElementById('modalTagsDisplay');
+    const tagsList = document.getElementById('modalTagsList');
+    const selectedTagsDiv = document.getElementById('modalSelectedTags');
+    
+    if (!tagsDisplay || !tagsList || !selectedTagsDiv) return;
+    
+    // Clear existing display
+    tagsDisplay.innerHTML = '';
+    selectedTagsDiv.innerHTML = '';
+    
+    // Show tags list if there are tags
+    if (selectedTags.length > 0) {
+        tagsList.classList.remove('d-none');
+        
+        selectedTags.forEach(tag => {
+            // Add to main display
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag-item';
+            tagElement.innerHTML = `${tag} <span class="remove-tag">×</span>`;
+            tagElement.onclick = () => removeTag(tag);
+            tagsDisplay.appendChild(tagElement);
+            
+            // Add to selected tags list
+            const selectedTagElement = document.createElement('span');
+            selectedTagElement.className = 'selected-tag';
+            selectedTagElement.textContent = tag;
+            selectedTagsDiv.appendChild(selectedTagElement);
+        });
+    } else {
+        tagsList.classList.add('d-none');
+    }
+}
+
 function submitEditForm() {
     const form = document.getElementById('editMediaForm');
     const formData = new FormData(form);
@@ -1441,6 +1675,13 @@ function submitEditForm() {
     console.log('Organization ID field in form:', orgIdField);
     if (orgIdField) {
         console.log('Organization ID field value:', orgIdField.value);
+    }
+    
+    // Add tags to the form data
+    if (selectedTags && selectedTags.length > 0) {
+        selectedTags.forEach(tag => {
+            formData.append('tags[]', tag);
+        });
     }
     
     // Get CSRF token from meta tag
@@ -1501,6 +1742,28 @@ document.addEventListener('DOMContentLoaded', function() {
         editForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
             submitEditForm(); // Call the same function as the Save button
+        });
+    }
+    
+    // Tags input event listener
+    const tagsInput = document.getElementById('modalTags');
+    if (tagsInput) {
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tagName = this.value.trim();
+                if (tagName) {
+                    addTag(tagName);
+                    this.value = '';
+                }
+            }
+        });
+        
+        tagsInput.addEventListener('input', function(e) {
+            // Prevent adding tags if limit is reached
+            if (selectedTags.length >= 2) {
+                this.value = '';
+            }
         });
     }
 });
@@ -1881,7 +2144,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (searchValue) {
                 const matchesTitle = cardTitle.includes(searchValue);
                 const matchesFilename = cardFilename.includes(searchValue);
-                if (!matchesTitle && !matchesFilename) {
+                
+                // Search in tags
+                let matchesTags = false;
+                const tagBadges = card.querySelectorAll('.tag-badge');
+                tagBadges.forEach(badge => {
+                    if (badge.textContent.toLowerCase().includes(searchValue)) {
+                        matchesTags = true;
+                    }
+                });
+                
+                if (!matchesTitle && !matchesFilename && !matchesTags) {
                     showCard = false;
                 }
             }

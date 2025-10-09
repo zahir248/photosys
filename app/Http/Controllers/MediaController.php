@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\Photo;
 use App\Models\Album;
 use App\Models\Organization;
+use App\Models\Tag;
 
 class MediaController extends Controller
 {
@@ -124,6 +125,8 @@ class MediaController extends Controller
                 'album_ids' => $request->organization_id ? 'required|array|min:1' : 'nullable|array',
                 'album_ids.*' => 'exists:albums,id',
                 'visibility' => 'required|in:private,public,org',
+                'tags' => 'nullable|array|max:2',
+                'tags.*' => 'string|max:50',
             ], [
                 'photos.required' => 'Please select at least one media file to upload.',
                 'photos.array' => 'Media must be uploaded as files.',
@@ -317,6 +320,24 @@ class MediaController extends Controller
                 // Attach albums if provided
                 if ($request->album_ids) {
                     $photo->albums()->attach($request->album_ids);
+                }
+                
+                // Handle tags
+                if ($request->tags && count($request->tags) > 0) {
+                    $tagIds = [];
+                    foreach ($request->tags as $tagName) {
+                        $tagName = trim($tagName);
+                        if ($tagName) {
+                            $tag = Tag::firstOrCreate(
+                                ['name' => strtolower($tagName)],
+                                ['color' => '#6c757d']
+                            );
+                            $tagIds[] = $tag->id;
+                        }
+                    }
+                    if (!empty($tagIds)) {
+                        $photo->tags()->attach($tagIds);
+                    }
                 }
                 
                 $uploadedPhotos[] = $photo;
@@ -523,7 +544,8 @@ class MediaController extends Controller
                     'created_at' => $photo->created_at,
                     'albums' => $photo->albums,
                     'organization' => $photo->organization,
-                    'user' => $photo->user
+                    'user' => $photo->user,
+                    'tags' => $photo->tags
                 ],
                 'albums' => $albums
             ]);
@@ -561,6 +583,8 @@ class MediaController extends Controller
                 'album_ids' => 'nullable|array',
                 'album_ids.*' => 'exists:albums,id',
                 'visibility' => 'required|in:private,public,org',
+                'tags' => 'nullable|array|max:2',
+                'tags.*' => 'string|max:50',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -619,6 +643,25 @@ class MediaController extends Controller
 
             // Sync albums
             $photo->albums()->sync($request->album_ids ?: []);
+            
+            // Handle tags
+            if ($request->tags && count($request->tags) > 0) {
+                $tagIds = [];
+                foreach ($request->tags as $tagName) {
+                    $tagName = trim($tagName);
+                    if ($tagName) {
+                        $tag = Tag::firstOrCreate(
+                            ['name' => strtolower($tagName)],
+                            ['color' => '#6c757d']
+                        );
+                        $tagIds[] = $tag->id;
+                    }
+                }
+                $photo->tags()->sync($tagIds);
+            } else {
+                // Remove all tags if none provided
+                $photo->tags()->sync([]);
+            }
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([

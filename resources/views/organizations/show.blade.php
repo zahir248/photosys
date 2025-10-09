@@ -145,6 +145,38 @@
     padding: 1.25rem;
 }
 
+/* Media Tags Styles */
+.media-tags {
+    margin: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: white;
+    background-color: #6c757d;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Random color classes for tag badges */
+.random-color-0 { background-color: #007bff !important; }
+.random-color-1 { background-color: #28a745 !important; }
+.random-color-2 { background-color: #dc3545 !important; }
+.random-color-3 { background-color: #ffc107 !important; color: #212529 !important; }
+.random-color-4 { background-color: #17a2b8 !important; }
+.random-color-5 { background-color: #6f42c1 !important; }
+.random-color-6 { background-color: #fd7e14 !important; }
+.random-color-7 { background-color: #20c997 !important; }
+
 .media-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -874,6 +906,80 @@ body.modal-open {
     border-radius: 8px;
 }
 
+/* Tags Input Styles */
+.tags-input-container {
+    position: relative;
+}
+
+.tags-input-wrapper {
+    position: relative;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0.375rem 0.75rem;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.tag-item {
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.tag-item:hover {
+    background: #dc3545;
+}
+
+.tag-item .remove-tag {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.tags-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    flex: 1;
+    min-width: 120px;
+}
+
+.tags-input:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.tags-list {
+    margin-top: 0.5rem;
+}
+
+.selected-tag {
+    display: inline-block;
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin: 0.125rem;
+}
+
 /* Resource Usage Styles */
 .resource-usage-item {
     padding: 1rem;
@@ -1464,6 +1570,18 @@ body.modal-open {
                                 <div class="media-info">
                                     <h5 class="media-title">{{ $photo->title }}</h5>
                                     <p class="media-description">{{ $photo->description ?? 'No description provided' }}</p>
+                                    
+                                    <!-- Tags Display -->
+                                    @if($photo->tags && $photo->tags->count() > 0)
+                                        <div class="media-tags">
+                                            @foreach($photo->tags as $tag)
+                                                <span class="tag-badge random-color-{{ $loop->index % 8 }}">
+                                                    {{ $tag->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    
                                     <div class="media-meta">
                                         <span class="media-date">
                                             <i class="bi bi-calendar me-1"></i>{{ $photo->created_at->format('M d, Y') }}
@@ -2390,7 +2508,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Photo Information -->
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-2" id="titleField" style="display: none;">
+                            <div class="mb-2" id="titleField">
                                 <label for="uploadTitle" class="form-label small">Media Title (Optional)</label>
                                 <input type="text" 
                                        class="form-control form-control-sm" 
@@ -2426,6 +2544,26 @@ document.addEventListener('DOMContentLoaded', function() {
                                   name="description" 
                                   rows="2" 
                                   placeholder="Describe your photo..."></textarea>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mb-2">
+                        <label for="uploadTags" class="form-label small">Tags (Optional) <span class="text-muted">- Maximum 2 tags</span></label>
+                        <div class="tags-input-container">
+                            <div class="tags-input-wrapper">
+                                <div id="tagsDisplay" class="tags-display"></div>
+                                <input type="text" 
+                                       id="uploadTags" 
+                                       class="form-control form-control-sm tags-input" 
+                                       placeholder="Type a tag and press Enter (max 2 tags)"
+                                       maxlength="50">
+                            </div>
+                            <div id="tagsList" class="tags-list d-none">
+                                <small class="text-muted">Selected tags:</small>
+                                <div id="selectedTags"></div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Press Enter to add a tag. Click on a tag to remove it.</small>
                     </div>
 
                     <div class="alert alert-info">
@@ -3147,6 +3285,7 @@ function submitCreateAlbumForm() {
 
 // Global variables for upload modal
 let selectedFiles = [];
+let selectedTags = [];
 
 // Global function for clearing all files in upload modal
 function clearAllFiles() {
@@ -3179,6 +3318,27 @@ function clearAllFiles() {
         if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'none';
     }
     
+    // Hide tags field
+    const tagsField = document.getElementById('uploadTags').closest('.mb-2');
+    if (tagsField) {
+        tagsField.style.display = 'none';
+    }
+    
+    // Show the fields again after clearing (since no files are selected, they should be visible)
+    setTimeout(() => {
+        if (titleField) {
+            const titleFieldContainer = titleField.closest('.mb-2');
+            if (titleFieldContainer) titleFieldContainer.style.display = 'block';
+        }
+        if (descriptionField) {
+            const descriptionFieldContainer = descriptionField.closest('.mb-2');
+            if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'block';
+        }
+        if (tagsField) {
+            tagsField.style.display = 'block';
+        }
+    }, 100);
+    
     // Reset upload button
     const uploadBtn = document.getElementById('modalUploadBtn');
     if (uploadBtn) {
@@ -3189,6 +3349,85 @@ function clearAllFiles() {
     const clearAllBtn = document.getElementById('clearAllBtn');
     if (clearAllBtn) {
         clearAllBtn.style.display = 'none';
+    }
+    
+    // Clear tags
+    clearTags();
+}
+
+// Tags functionality
+function clearTags() {
+    selectedTags = [];
+    const tagsDisplay = document.getElementById('tagsDisplay');
+    const tagsList = document.getElementById('tagsList');
+    const selectedTagsDiv = document.getElementById('selectedTags');
+    const tagsInput = document.getElementById('uploadTags');
+    
+    if (tagsDisplay) tagsDisplay.innerHTML = '';
+    if (tagsList) tagsList.classList.add('d-none');
+    if (selectedTagsDiv) selectedTagsDiv.innerHTML = '';
+    if (tagsInput) tagsInput.value = '';
+}
+
+function addTag(tagName) {
+    if (!tagName || tagName.trim() === '') return;
+    
+    tagName = tagName.trim().toLowerCase();
+    
+    // Check if tag already exists
+    if (selectedTags.includes(tagName)) {
+        return;
+    }
+    
+    // Check maximum tags limit
+    if (selectedTags.length >= 2) {
+        showToast('Maximum 2 tags allowed per media.', 'warning');
+        return;
+    }
+    
+    selectedTags.push(tagName);
+    updateTagsDisplay();
+}
+
+function removeTag(tagName) {
+    const index = selectedTags.indexOf(tagName);
+    if (index > -1) {
+        selectedTags.splice(index, 1);
+        updateTagsDisplay();
+    }
+}
+
+function updateTagsDisplay() {
+    const tagsDisplay = document.getElementById('tagsDisplay');
+    const tagsList = document.getElementById('tagsList');
+    const selectedTagsDiv = document.getElementById('selectedTags');
+    
+    if (!tagsDisplay || !tagsList || !selectedTagsDiv) return;
+    
+    // Clear existing display
+    tagsDisplay.innerHTML = '';
+    selectedTagsDiv.innerHTML = '';
+    
+    // Show tags list if there are tags
+    if (selectedTags.length > 0) {
+        tagsList.classList.remove('d-none');
+        
+        selectedTags.forEach(tag => {
+            // Add to main display
+            const tagElement = document.createElement('span');
+            tagElement.className = 'tag-item';
+            tagElement.innerHTML = `${tag} <span class="remove-tag">×</span>`;
+            tagElement.onclick = () => removeTag(tag);
+            tagsDisplay.appendChild(tagElement);
+            
+            // Add to selected tags list
+            const selectedTagElement = document.createElement('span');
+            selectedTagElement.className = 'selected-tag';
+            selectedTagElement.textContent = tag;
+            selectedTagsDiv.appendChild(selectedTagElement);
+        });
+    } else {
+        tagsList.classList.add('d-none');
     }
 }
 
@@ -3334,10 +3573,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
                 
-                // Show title and description fields for single file
+                // Show title, description, and tags fields for single file
                 if (titleField) titleField.style.display = 'block';
                 const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+                const tagsField = document.getElementById('uploadTags').closest('.mb-2');
                 if (descriptionField) descriptionField.style.display = 'block';
+                if (tagsField) tagsField.style.display = 'block';
                 
                 // Update button text for single media
                 if (modalUploadBtn) modalUploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
@@ -3412,7 +3653,9 @@ document.addEventListener('DOMContentLoaded', function() {
             fileInfo.textContent = `${files.length} media selected`;
             if (titleField) titleField.style.display = 'none';
             const descriptionField = document.getElementById('uploadDescription').closest('.mb-2');
+            const tagsField = document.getElementById('uploadTags').closest('.mb-2');
             if (descriptionField) descriptionField.style.display = 'none';
+            if (tagsField) tagsField.style.display = 'none';
             if (modalUploadBtn) modalUploadBtn.innerHTML = `<i class="bi bi-cloud-upload me-1"></i>Upload ${files.length} Media`;
             
             // Show clear all button
@@ -3454,6 +3697,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const descriptionFieldContainer = descriptionField.closest('.mb-2');
                 if (descriptionFieldContainer) descriptionFieldContainer.style.display = 'none';
             }
+            const tagsField = document.getElementById('uploadTags').closest('.mb-2');
+            if (tagsField) tagsField.style.display = 'none';
             // Reset upload button
             const uploadBtn = document.getElementById('modalUploadBtn');
             if (uploadBtn) uploadBtn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i>Upload Media';
@@ -3473,6 +3718,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Tags input event listener
+    const tagsInput = document.getElementById('uploadTags');
+    if (tagsInput) {
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tagName = this.value.trim();
+                if (tagName) {
+                    addTag(tagName);
+                    this.value = '';
+                }
+            }
+        });
+        
+        tagsInput.addEventListener('input', function(e) {
+            // Prevent adding tags if limit is reached
+            if (selectedTags.length >= 2) {
+                this.value = '';
+            }
+        });
+    }
+
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024; const sizes = ['Bytes','KB','MB','GB'];
@@ -3487,6 +3754,13 @@ function submitUploadMediaForm() {
     
     // Add organization_id to the form data
     formData.append('organization_id', '{{ $organization->id }}');
+    
+    // Add tags to the form data
+    if (selectedTags && selectedTags.length > 0) {
+        selectedTags.forEach(tag => {
+            formData.append('tags[]', tag);
+        });
+    }
     
     // Check if files are selected
     const fileInput = document.getElementById('uploadMedia');
