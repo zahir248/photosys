@@ -1416,11 +1416,7 @@ body.modal-open {
                                         <div class="details-list">
                                             <div class="detail-item mb-2">
                                                 <div class="detail-label small text-muted">Album</div>
-                                                <div class="detail-value small" id="detailAlbum">No album</div>
-                                            </div>
-                                            <div class="detail-item mb-2">
-                                                <div class="detail-label small text-muted">Organization</div>
-                                                <div class="detail-value small" id="detailOrganization">None</div>
+                                                <div class="detail-value small" id="detailAlbum">None</div>
                                             </div>
                                             <div class="detail-item mb-2">
                                                 <div class="detail-label small text-muted">Uploaded by</div>
@@ -2436,11 +2432,9 @@ function selectModalVisibility(value) {
 
 function populateDetailsTab(photo) {
     // Albums
-    const albumNames = photo.albums ? photo.albums.map(album => album.name).join(', ') : 'No albums';
+    const albumNames = photo.albums && photo.albums.length > 0 ? photo.albums.map(album => album.name).join(', ') : 'None';
     document.getElementById('detailAlbum').textContent = albumNames;
     
-    // Organization
-    document.getElementById('detailOrganization').textContent = photo.organization ? photo.organization.name : 'None';
     
     // Uploaded by
     document.getElementById('detailUploader').textContent = photo.user ? photo.user.name : '-';

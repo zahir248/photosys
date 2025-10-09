@@ -1424,11 +1424,7 @@
                                     <div class="details-list">
                                         <div class="detail-item mb-2">
                                             <div class="detail-label small text-muted">Album</div>
-                                            <div class="detail-value small" id="detailAlbum">No album</div>
-                                        </div>
-                                        <div class="detail-item mb-2">
-                                            <div class="detail-label small text-muted">Organization</div>
-                                            <div class="detail-value small" id="detailOrganization">None</div>
+                                            <div class="detail-value small" id="detailAlbum">None</div>
                                         </div>
                                         <div class="detail-item mb-2">
                                             <div class="detail-label small text-muted">Uploaded by</div>
@@ -1668,8 +1664,7 @@ function selectModalVisibility(value) {
 }
 
 function populateDetailsTab(photo) {
-    document.getElementById('detailAlbum').textContent = photo.albums && photo.albums.length > 0 ? photo.albums.map(a => a.name).join(', ') : 'No album';
-    document.getElementById('detailOrganization').textContent = photo.organization ? photo.organization.name : 'None';
+    document.getElementById('detailAlbum').textContent = photo.albums && photo.albums.length > 0 ? photo.albums.map(a => a.name).join(', ') : 'None';
     document.getElementById('detailUploader').textContent = photo.user ? photo.user.name : '-';
     document.getElementById('detailUploaded').textContent = new Date(photo.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
