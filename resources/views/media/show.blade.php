@@ -498,8 +498,8 @@
                     </span>
                 </div>
 
-                <!-- Share Link (if public) -->
-                @if($photo->visibility === 'public')
+                <!-- Share Link (if public and has share token) -->
+                @if($photo->visibility === 'public' && $photo->share_token)
                     <div class="detail-section">
                         <div class="share-section">
                             <div class="detail-label">Share Link</div>

@@ -585,6 +585,7 @@ class MediaController extends Controller
     {
         $user = Auth::user();
         
+        
         $photo = Photo::where('filename', $filename)->firstOrFail();
         
         // Check if user has access to this photo
