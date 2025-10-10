@@ -1581,7 +1581,10 @@ function openEditModal(filename) {
     const from = urlParams.get('from');
     const org = urlParams.get('org');
     
-    let fetchUrl = `/media/${filename}/edit-data`;
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
+    let fetchUrl = `${baseUrl}/media/${filename}/edit-data`;
     if (from && org) {
         fetchUrl += `?from=${from}&org=${encodeURIComponent(org)}`;
     }
@@ -1641,7 +1644,7 @@ function openEditModal(filename) {
             selectModalVisibility(data.photo.visibility);
             
             // Set form action
-            document.getElementById('editMediaForm').action = `/media/${filename}`;
+            document.getElementById('editMediaForm').action = `${baseUrl}/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching media data:', error);
@@ -2073,7 +2076,8 @@ function removeMediaFromAlbum() {
         const from = urlParams.get('from');
         const org = urlParams.get('org');
         
-        let url = `/albums/{{ urlencode($album->name) }}/media/${currentPhotoFilename}`;
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        let url = `${baseUrl}/albums/{{ urlencode($album->name) }}/media/${currentPhotoFilename}`;
         if (from && org) {
             url += `?from=${from}&org=${encodeURIComponent(org)}`;
         }
@@ -2487,7 +2491,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const from = urlParams.get('from');
             const org = urlParams.get('org');
             
-            let url = `/albums/{{ urlencode($album->name) }}/media/${filename}`;
+            const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+            let url = `${baseUrl}/albums/{{ urlencode($album->name) }}/media/${filename}`;
             if (from && org) {
                 url += `?from=${from}&org=${encodeURIComponent(org)}`;
             }
