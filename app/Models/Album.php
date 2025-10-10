@@ -15,6 +15,11 @@ class Album extends Model
         'cover_image',
     ];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'organization_id' => 'integer',
+    ];
+
     /**
      * Get the user that owns the album.
      */

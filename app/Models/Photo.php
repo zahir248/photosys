@@ -23,6 +23,12 @@ class Photo extends Model
         'share_token',
     ];
 
+    protected $casts = [
+        'organization_id' => 'integer',
+        'user_id' => 'integer',
+        'size_bytes' => 'integer',
+    ];
+
     protected static function boot()
     {
         parent::boot();

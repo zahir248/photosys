@@ -14,6 +14,10 @@ class Organization extends Model
         'cover_image',
     ];
 
+    protected $casts = [
+        'owner_id' => 'integer',
+    ];
+
     /**
      * Get the owner of the organization.
      */
