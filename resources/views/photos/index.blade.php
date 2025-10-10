@@ -1864,8 +1864,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let deletedCount = 0;
         let errorCount = 0;
         
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const deletePromises = filenames.map(filename => {
-            return fetch(`/photos/${filename}`, {
+            return fetch(`${baseUrl}/photos/${filename}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2254,8 +2255,11 @@ function openEditModal(filename) {
         console.error('Modal element not found');
     }
     
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
     // Fetch photo data
-    fetch(`/photos/${filename}/edit-data`)
+    fetch(`${baseUrl}/photos/${filename}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -2316,7 +2320,7 @@ function openEditModal(filename) {
             selectModalVisibility(data.photo.visibility);
             
             // Set form action
-            document.getElementById('editPhotoForm').action = `/photos/${filename}`;
+            document.getElementById('editPhotoForm').action = `${baseUrl}/photos/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
@@ -2471,7 +2475,8 @@ function deletePhoto() {
     
     // Show confirmation dialog
     if (confirm('Are you sure you want to delete this photo? This action cannot be undone.')) {
-        fetch(`/photos/${currentPhotoFilename}`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/photos/${currentPhotoFilename}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

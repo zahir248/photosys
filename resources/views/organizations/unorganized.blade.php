@@ -2028,8 +2028,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let deletedCount = 0;
         let errorCount = 0;
         
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
         const deletePromises = filenames.map(filename => {
-            return fetch(`/media/${filename}`, {
+            return fetch(`${baseUrl}/media/${filename}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

@@ -2713,7 +2713,8 @@ document.addEventListener('DOMContentLoaded', function() {
 let currentOrganizationName = '{{ $organization->name }}';
 
 function loadOrganizationData() {
-    fetch(`/organizations/{{ $organization->name }}/edit-data`)
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    fetch(`${baseUrl}/organizations/{{ $organization->name }}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -2822,7 +2823,8 @@ function deleteOrganization() {
     if (!currentOrganizationName) return;
     
     if (confirm('Are you sure you want to delete this organization? This action cannot be undone. All members will be removed from this organization.')) {
-        fetch(`/organizations/${currentOrganizationName}`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/organizations/${currentOrganizationName}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2869,7 +2871,8 @@ function removeMember(userId, userName) {
         return;
     }
     
-    fetch(`/organizations/{{ $organization->name }}/users/${userId}`, {
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    fetch(`${baseUrl}/organizations/{{ $organization->name }}/users/${userId}`, {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -3012,8 +3015,11 @@ function editPhoto(filename) {
     };
     document.addEventListener('keydown', escapeHandler);
 
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
     // Fetch photo data
-    fetch(`/media/${filename}/edit-data`)
+    fetch(`${baseUrl}/media/${filename}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

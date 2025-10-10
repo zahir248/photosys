@@ -1280,8 +1280,11 @@ function editOrganization(organizationName) {
     const modal = new bootstrap.Modal(document.getElementById('editOrganizationModal'));
     modal.show();
     
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
     // Fetch organization data
-    fetch(`/organizations/${organizationName}/edit-data`)
+    fetch(`${baseUrl}/organizations/${organizationName}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1364,7 +1367,8 @@ function removeOrgCoverImage() {
     }
     
     if (confirm('Are you sure you want to remove the cover image from this organization? The organization will fall back to showing the first media as cover.')) {
-        fetch(`/organizations/${currentOrganizationName}/cover`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/organizations/${currentOrganizationName}/cover`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1475,7 +1479,8 @@ function deleteOrganization() {
     if (!currentOrganizationName) return;
     
     if (confirm('Are you sure you want to delete this organization? This action cannot be undone. All members will be removed from this organization.')) {
-        fetch(`/organizations/${currentOrganizationName}`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/organizations/${currentOrganizationName}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
