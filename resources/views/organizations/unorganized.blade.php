@@ -1409,7 +1409,9 @@ function openEditModal(filename) {
     const from = 'organization';
     const org = '{{ $organization->name }}';
     
-    let fetchUrl = `/media/${filename}/edit-data?from=${from}&org=${encodeURIComponent(org)}`;
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    let fetchUrl = `${baseUrl}/media/${filename}/edit-data?from=${from}&org=${encodeURIComponent(org)}`;
     
     fetch(fetchUrl)
         .then(response => {
@@ -1464,7 +1466,8 @@ function openEditModal(filename) {
             selectModalVisibility(data.photo.visibility);
             
             // Set form action
-            document.getElementById('editMediaForm').action = `/media/${filename}`;
+            const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+            document.getElementById('editMediaForm').action = `${baseUrl}/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
@@ -1528,7 +1531,9 @@ function deletePhoto() {
         const from = 'organization';
         const org = '{{ $organization->name }}';
         
-        let url = `/media/${currentPhotoFilename}?from=${from}&org=${encodeURIComponent(org)}`;
+        // Get base URL from meta tag
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        let url = `${baseUrl}/media/${currentPhotoFilename}?from=${from}&org=${encodeURIComponent(org)}`;
         
         fetch(url, {
             method: 'DELETE',

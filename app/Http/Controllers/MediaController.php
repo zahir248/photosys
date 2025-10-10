@@ -519,6 +519,7 @@ class MediaController extends Controller
             $from = request('from');
             $orgName = request('org');
             
+            
             $photo = Photo::where('filename', $filename)->firstOrFail();
             
             // Check if user has access to this photo
