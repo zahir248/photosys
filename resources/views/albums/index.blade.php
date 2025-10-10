@@ -1343,8 +1343,11 @@ function editAlbum(albumName) {
     const modal = new bootstrap.Modal(document.getElementById('editAlbumModal'));
     modal.show();
     
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
     // Fetch album data
-    fetch(`/albums/${albumName}/edit-data`)
+    fetch(`${baseUrl}/albums/${albumName}/edit-data`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1366,7 +1369,7 @@ function editAlbum(albumName) {
             populateAlbumDetailsTab(data.album);
             
             // Set form action
-            document.getElementById('editAlbumForm').action = `/albums/${albumName}`;
+            document.getElementById('editAlbumForm').action = `${baseUrl}/albums/${albumName}`;
         })
         .catch(error => {
             console.error('Error fetching album data:', error);
@@ -1426,7 +1429,8 @@ function removeCoverImage() {
     }
     
     if (confirm('Are you sure you want to remove the cover image from this album? The album will fall back to showing the first media as cover.')) {
-        fetch(`/albums/${currentAlbumName}/cover`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/albums/${currentAlbumName}/cover`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1525,7 +1529,8 @@ function deleteAlbum() {
     }
     
     if (confirm('Are you sure you want to delete this album? This action cannot be undone. All media in this album will be moved to "No Album".')) {
-        fetch(`/albums/${currentAlbumName}`, {
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        fetch(`${baseUrl}/albums/${currentAlbumName}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
