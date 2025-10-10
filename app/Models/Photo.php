@@ -105,22 +105,40 @@ class Photo extends Model
      */
     public function isAccessibleBy(User $user = null)
     {
-        // Uploader always has access
-        if ($user && $this->user_id === $user->id) {
+        // Debug logging
+        \Log::info('isAccessibleBy check', [
+            'photo_user_id' => $this->user_id,
+            'photo_user_id_type' => gettype($this->user_id),
+            'user_id' => $user ? $user->id : 'null',
+            'user_id_type' => $user ? gettype($user->id) : 'null',
+            'visibility' => $this->visibility,
+            'organization_id' => $this->organization_id
+        ]);
+
+        // Uploader always has access (ensure proper type comparison)
+        if ($user && (int)$this->user_id === (int)$user->id) {
+            \Log::info('Access granted - user owns photo');
             return true;
         }
 
         // Public photos are accessible to everyone
         if ($this->visibility === 'public') {
+            \Log::info('Access granted - public photo');
             return true;
         }
 
         // Organization photos are accessible to organization members
         if ($this->visibility === 'org' && $user && $this->organization_id) {
-            return $this->organization->users->contains($user);
+            $hasAccess = $this->organization->users->contains($user);
+            \Log::info('Organization access check', [
+                'has_access' => $hasAccess,
+                'organization_users_count' => $this->organization->users->count()
+            ]);
+            return $hasAccess;
         }
 
         // Private photos are only accessible to uploader
+        \Log::info('Access denied - private photo, not owner');
         return false;
     }
 }

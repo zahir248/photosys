@@ -402,17 +402,39 @@ class MediaController extends Controller
     {
         $user = Auth::user();
         
+        // Log the download attempt for debugging
+        \Log::info('Download attempt', [
+            'filename' => $filename,
+            'user_id' => $user ? $user->id : 'not authenticated',
+            'ip' => request()->ip()
+        ]);
+        
         $photo = Photo::where('filename', $filename)->firstOrFail();
         
         if (!$photo->isAccessibleBy($user)) {
+            \Log::warning('Download denied - no permission', [
+                'filename' => $filename,
+                'user_id' => $user ? $user->id : 'not authenticated',
+                'photo_user_id' => $photo->user_id,
+                'photo_visibility' => $photo->visibility
+            ]);
             abort(403, 'You do not have permission to download this photo.');
         }
 
         $filePath = storage_path('app/public/' . $photo->storage_path);
         
         if (!file_exists($filePath)) {
+            \Log::error('Download failed - file not found', [
+                'filename' => $filename,
+                'file_path' => $filePath
+            ]);
             abort(404, 'Photo file not found.');
         }
+
+        \Log::info('Download successful', [
+            'filename' => $filename,
+            'user_id' => $user->id
+        ]);
 
         return response()->download($filePath, $photo->filename);
     }
