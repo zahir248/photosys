@@ -2736,7 +2736,7 @@ function loadOrganizationData() {
             populateOrganizationDetailsTab(data.organization);
             
             // Set form action
-            document.getElementById('editOrganizationForm').action = `/organizations/{{ $organization->name }}`;
+            document.getElementById('editOrganizationForm').action = `${baseUrl}/organizations/{{ $organization->name }}`;
         })
         .catch(error => {
             console.error('Error fetching organization data:', error);
@@ -2807,7 +2807,8 @@ function submitEditOrganizationForm() {
                 }
                 
                 // Redirect to the new organization URL
-                window.location.href = `/organizations/${data.organization.name}`;
+                const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+                window.location.href = `${baseUrl}/organizations/${data.organization.name}`;
             }, 1000);
         } else {
             throw new Error(data.message || 'Unknown error occurred');
@@ -3070,7 +3071,7 @@ function editPhoto(filename) {
             }
 
             // Set form action
-            document.getElementById('editPhotoForm').action = `/media/${filename}`;
+            document.getElementById('editPhotoForm').action = `${baseUrl}/media/${filename}`;
         })
         .catch(error => {
             console.error('Error fetching photo data:', error);
@@ -3905,8 +3906,11 @@ let currentAlbumName = null;
 function editAlbum(albumName) {
     currentAlbumName = albumName;
     
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
     // Set form action
-    document.getElementById('editAlbumForm').action = `/albums/${albumName}`;
+    document.getElementById('editAlbumForm').action = `${baseUrl}/albums/${albumName}`;
     
     // Load album data
     loadAlbumData();
@@ -3936,7 +3940,10 @@ function loadAlbumData() {
     console.log('URL parameters:', { from, org });
     console.log('Current URL:', window.location.href);
     
-    let fetchUrl = `/albums/${currentAlbumName}/edit-data`;
+    // Get base URL from meta tag
+    const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+    
+    let fetchUrl = `${baseUrl}/albums/${currentAlbumName}/edit-data`;
     if (from && org) {
         fetchUrl += `?from=${from}&org=${encodeURIComponent(org)}`;
     }
@@ -4044,7 +4051,8 @@ function removeAlbumCoverImage() {
             }
         }
         
-        let fetchUrl = `/albums/${currentAlbumName}/cover`;
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        let fetchUrl = `${baseUrl}/albums/${currentAlbumName}/cover`;
         if (from && org) {
             fetchUrl += `?from=${from}&org=${encodeURIComponent(org)}`;
         }
@@ -4166,10 +4174,11 @@ function deleteAlbum() {
         }
     }
     
-    let fetchUrl = `/albums/${currentAlbumName}`;
-    if (from && org) {
-        fetchUrl += `?from=${from}&org=${encodeURIComponent(org)}`;
-    }
+        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content');
+        let fetchUrl = `${baseUrl}/albums/${currentAlbumName}`;
+        if (from && org) {
+            fetchUrl += `?from=${from}&org=${encodeURIComponent(org)}`;
+        }
     
     fetch(fetchUrl, {
         method: 'DELETE',
