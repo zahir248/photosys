@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Photo extends Model
 {
@@ -74,7 +75,8 @@ class Photo extends Model
      */
     public function getUrlAttribute()
     {
-        return asset('storage/' . $this->storage_path);
+        // Use the Laravel route to serve storage files
+        return route('storage.serve', ['path' => $this->storage_path]);
     }
 
     /**

@@ -31,6 +31,23 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Public media sharing
 Route::get('/share/{token}', [MediaController::class, 'share'])->name('media.share');
 
+// Public storage file serving
+Route::get('/files/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($filePath);
+    $fileName = basename($filePath);
+    
+    return response()->file($filePath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $fileName . '"'
+    ]);
+})->where('path', '.*')->name('storage.serve');
+
 // Public invitation routes
 Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
 Route::get('/invitations/{token}/accept', [InvitationController::class, 'accept'])->name('invitations.accept');

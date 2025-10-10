@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Organization extends Model
 {
@@ -90,7 +91,8 @@ class Organization extends Model
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
+            // Use the Laravel route to serve storage files
+            return route('storage.serve', ['path' => $this->cover_image]);
         }
         
         return null;
