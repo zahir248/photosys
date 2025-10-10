@@ -187,11 +187,13 @@ class AlbumController extends Controller
             $from = request('from');
             $orgName = request('org');
             
+            
             $query = Album::where('name', $name);
             
             if ($from === 'organization' && $orgName) {
                 // For organization albums
                 $organization = Organization::where('name', $orgName)->firstOrFail();
+                
                 
                 // Check if user is the owner or a member of the organization
                 if ($organization->owner_id !== $user->id && !$organization->users->contains($user)) {
@@ -387,6 +389,7 @@ class AlbumController extends Controller
             $user = Auth::user();
             $from = request('from');
             $orgName = request('org');
+            
             
             $query = Album::where('name', $name);
             

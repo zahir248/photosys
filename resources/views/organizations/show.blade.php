@@ -3931,9 +3931,16 @@ function loadAlbumData() {
     // If not in URL parameters, check if we're on an organization page
     if (!from && !org) {
         const pathParts = window.location.pathname.split('/');
-        if (pathParts[1] === 'organizations' && pathParts[2]) {
-            from = 'organization';
-            org = decodeURIComponent(pathParts[2]);
+        console.log('Path parts:', pathParts);
+        
+        // Handle both /organizations/name and /photosys/organizations/name
+        if (pathParts.includes('organizations')) {
+            const orgIndex = pathParts.indexOf('organizations');
+            if (pathParts[orgIndex + 1]) {
+                from = 'organization';
+                org = decodeURIComponent(pathParts[orgIndex + 1]);
+                console.log('Detected organization context from URL:', { from, org });
+            }
         }
     }
     
@@ -4045,9 +4052,16 @@ function removeAlbumCoverImage() {
         
         if (!from && !org) {
             const pathParts = window.location.pathname.split('/');
-            if (pathParts[1] === 'organizations' && pathParts[2]) {
-                from = 'organization';
-                org = decodeURIComponent(pathParts[2]);
+            console.log('Path parts:', pathParts);
+            
+            // Handle both /organizations/name and /photosys/organizations/name
+            if (pathParts.includes('organizations')) {
+                const orgIndex = pathParts.indexOf('organizations');
+                if (pathParts[orgIndex + 1]) {
+                    from = 'organization';
+                    org = decodeURIComponent(pathParts[orgIndex + 1]);
+                    console.log('Detected organization context from URL:', { from, org });
+                }
             }
         }
         
@@ -4168,9 +4182,13 @@ function deleteAlbum() {
     // If not in URL parameters, check if we're on an organization page
     if (!from && !org) {
         const pathParts = window.location.pathname.split('/');
-        if (pathParts[1] === 'organizations' && pathParts[2]) {
-            from = 'organization';
-            org = decodeURIComponent(pathParts[2]);
+        // Handle both /organizations/name and /photosys/organizations/name
+        if (pathParts.includes('organizations')) {
+            const orgIndex = pathParts.indexOf('organizations');
+            if (pathParts[orgIndex + 1]) {
+                from = 'organization';
+                org = decodeURIComponent(pathParts[orgIndex + 1]);
+            }
         }
     }
     
